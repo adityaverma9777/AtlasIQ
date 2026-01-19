@@ -19,14 +19,23 @@ interface CoinGeckoResponse {
 const COINS = ['bitcoin', 'ethereum']
 
 async function fetchCoinGeckoData(bypassCache: boolean): Promise<CoinGeckoResponse> {
+    const isProduction = import.meta.env.PROD
+
+    if (isProduction) {
+        // Use our API route in production to avoid CORS
+        const url = `/api/crypto?ids=${COINS.join(',')}&vs_currencies=usd`
+        return await fetchWithCache<CoinGeckoResponse>(url, { cacheMinutes: 2, bypassCache })
+    }
+
+    // In development, try direct API first
     const baseUrl = `https://api.coingecko.com/api/v3/simple/price?ids=${COINS.join(',')}&vs_currencies=usd&include_24hr_change=true`
 
-    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(baseUrl)}`
-
     try {
-        return await fetchWithCache<CoinGeckoResponse>(proxyUrl, { cacheMinutes: 2, bypassCache })
-    } catch {
         return await fetchWithCache<CoinGeckoResponse>(baseUrl, { cacheMinutes: 2, bypassCache })
+    } catch {
+        // Fallback to cors proxy in dev
+        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(baseUrl)}`
+        return await fetchWithCache<CoinGeckoResponse>(proxyUrl, { cacheMinutes: 2, bypassCache })
     }
 }
 
