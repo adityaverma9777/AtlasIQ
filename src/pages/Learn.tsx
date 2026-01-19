@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { SectionHeader, InfoCard } from '../components/dashboard'
+import { Loader } from '../components/Loader'
 import { getFeaturedTopics, getKnowledgeArticle, getEntityPath, type KnowledgeEntity } from '../lib'
 import './Learn.css'
 
@@ -66,7 +67,7 @@ export function Learn() {
             <section className="learn-section">
                 <SectionHeader title="Today in Knowledge" subtitle="Daily encyclopedia articles" />
                 <div className="knowledge-grid">
-                    {loading && <p className="loading-text">Loading articles...</p>}
+                    {loading && <Loader size="sm" text="Loading articles..." />}
                     {!loading && featuredArticles.length === 0 && (
                         <p className="no-articles">No articles available</p>
                     )}

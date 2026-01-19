@@ -11,6 +11,7 @@ import {
 } from '../lib/globalMarkets'
 import { getEntityPath } from '../lib'
 import { SectionHeader } from '../components/dashboard'
+import { Loader } from '../components/Loader'
 import './Markets.css'
 
 // country flag emojis
@@ -177,7 +178,9 @@ export function Markets() {
 
             {/* loading state */}
             {loading && (
-                <div className="markets-loading">Loading market data...</div>
+                <div className="container-loader">
+                    <Loader size="md" text="Loading market data..." />
+                </div>
             )}
 
             {/* error state */}

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import { search, getEntityPath, type SearchResult as SearchResultType } from '../lib'
 import { SectionHeader } from '../components/dashboard'
+import { Loader, InlineLoader } from '../components/Loader'
 import './Search.css'
 
 export function Search() {
@@ -40,14 +41,13 @@ export function Search() {
                 <h1>
                     Search: <span className="search-query">{query}</span>
                 </h1>
-                {loading && <p className="search-status">Searching encyclopedia...</p>}
+                {loading && <InlineLoader text="Searching encyclopedia..." />}
             </header>
 
             {/* loading state */}
             {loading && (
                 <div className="search-loading">
-                    <div className="search-spinner" />
-                    <p>Looking up "{result?.searchedTopic || query}"...</p>
+                    <Loader size="lg" text={`Looking up "${result?.searchedTopic || query}"...`} />
                 </div>
             )}
 

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { aqiColors, categoryLabels, type AQIData } from '../../lib'
 import { getEntityPath } from '../../lib'
 import { cityToSlug } from '../../data'
+import { InlineLoader } from '../Loader'
 import './AQICard.css'
 
 interface AQICardProps {
@@ -15,7 +16,7 @@ export function AQICard({ data, loading, error }: AQICardProps) {
         return (
             <div className="aqi-card">
                 <span className="aqi-card-label">Air Quality</span>
-                <span className="aqi-loading">Loading...</span>
+                <InlineLoader />
             </div>
         )
     }

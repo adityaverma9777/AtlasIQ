@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { SectionHeader, InfoCard, ListItem, AQICard } from '../components/dashboard'
+import { InlineLoader } from '../components/Loader'
 import { useAsync, useUserContext } from '../hooks'
 import { fetchWeather, fetchAQI, getEntityPath } from '../lib'
 import { getExamsForContext, getGovtForContext, getForeignRelations, govtTypeLabels } from '../data'
@@ -46,7 +47,7 @@ export function India() {
                         label={weather.data?.location ?? 'Weather'}
                         value={weather.data ? `${weather.data.temperature}°C` : '—'}
                     >
-                        {weather.loading && <span>Loading...</span>}
+                        {weather.loading && <InlineLoader />}
                         {weather.error && <span>Unable to fetch</span>}
                         {weather.data && <span>{weather.data.condition}</span>}
                     </InfoCard>
@@ -55,7 +56,7 @@ export function India() {
                         <span>Petrol in {location.city || location.state || 'India'} • Diesel ₹87.62</span>
                     </InfoCard>
                     <InfoCard label="Govt Updates">
-                        <span>{govtUpdates[0]?.title || 'Loading...'}</span>
+                        <span>{govtUpdates[0]?.title || <InlineLoader text="Loading..." />}</span>
                     </InfoCard>
                 </div>
             </section>

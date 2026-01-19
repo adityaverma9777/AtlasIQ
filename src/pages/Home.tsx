@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { SectionHeader, InfoCard, ListItem, MarketRow, AlertItem, AQICard, NewsFilters } from '../components/dashboard'
+import { Loader, InlineLoader } from '../components/Loader'
 import { useAsync, useUserContext } from '../hooks'
 import {
     fetchHeadlines,
@@ -156,12 +157,12 @@ export function Home() {
                 <SectionHeader title="World Snapshot" subtitle="Real-time global overview" />
                 <div className="snapshot-grid">
                     <InfoCard label="Headlines" value={headlineCount > 0 ? `${headlineCount} stories` : '—'}>
-                        {headlineLoading && <span>Loading...</span>}
+                        {headlineLoading && <InlineLoader />}
                         {headlineError && <span>Unable to fetch</span>}
                         {headlineItems.length > 0 && <span>Top stories from global sources</span>}
                     </InfoCard>
                     <InfoCard label="Markets" value={marketStatus}>
-                        {markets.loading && <span>Loading...</span>}
+                        {markets.loading && <InlineLoader />}
                         {markets.error && <span>Unable to fetch</span>}
                         {markets.data && <span>Crypto markets update</span>}
                     </InfoCard>
@@ -170,7 +171,7 @@ export function Home() {
                         value={weather.data ? `${weather.data.temperature}°C` : '—'}
                         href={getEntityPath('weather', cityToSlug(location.city || 'weather'))}
                     >
-                        {weather.loading && <span>Loading...</span>}
+                        {weather.loading && <InlineLoader />}
                         {weather.error && <span>Unable to fetch</span>}
                         {weather.data && <span>{weather.data.condition}</span>}
                     </InfoCard>
@@ -189,7 +190,7 @@ export function Home() {
                     />
                     <NewsFilters value={newsFilters} onChange={setNewsFilters} />
                     <div>
-                        {headlineLoading && <p className="loading-text">Loading headlines...</p>}
+                        {headlineLoading && <Loader size="sm" text="Loading headlines..." />}
                         {displayHeadlines.map((item, i) => (
                             <ListItem
                                 key={i}
@@ -235,7 +236,7 @@ export function Home() {
                         loading={markets.loading}
                     />
                     <div>
-                        {markets.loading && <p className="loading-text">Loading markets...</p>}
+                        {markets.loading && <Loader size="sm" text="Loading markets..." />}
                         {displayMarkets.map((item, i) => (
                             <MarketRow
                                 key={i}
@@ -263,7 +264,7 @@ export function Home() {
                     loading={alerts.loading}
                 />
                 <div>
-                    {alerts.loading && <p className="loading-text">Checking alerts...</p>}
+                    {alerts.loading && <Loader size="sm" text="Checking alerts..." />}
                     {alerts.error && <p className="no-alerts">Unable to check alerts</p>}
                     {alerts.data && alerts.data.length === 0 && (
                         <p className="no-alerts">No active alerts</p>
