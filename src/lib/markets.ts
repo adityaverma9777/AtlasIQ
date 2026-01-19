@@ -18,10 +18,20 @@ interface CoinGeckoResponse {
 
 const COINS = ['bitcoin', 'ethereum']
 
-export async function fetchCryptoMarkets(bypassCache = false): Promise<MarketData[]> {
-    const url = `https://api.coingecko.com/api/v3/simple/price?ids=${COINS.join(',')}&vs_currencies=usd&include_24hr_change=true`
+async function fetchCoinGeckoData(bypassCache: boolean): Promise<CoinGeckoResponse> {
+    const baseUrl = `https://api.coingecko.com/api/v3/simple/price?ids=${COINS.join(',')}&vs_currencies=usd&include_24hr_change=true`
 
-    const data = await fetchWithCache<CoinGeckoResponse>(url, { cacheMinutes: 2, bypassCache })
+    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(baseUrl)}`
+
+    try {
+        return await fetchWithCache<CoinGeckoResponse>(proxyUrl, { cacheMinutes: 2, bypassCache })
+    } catch {
+        return await fetchWithCache<CoinGeckoResponse>(baseUrl, { cacheMinutes: 2, bypassCache })
+    }
+}
+
+export async function fetchCryptoMarkets(bypassCache = false): Promise<MarketData[]> {
+    const data = await fetchCoinGeckoData(bypassCache)
 
     return COINS.map((coin) => {
         const info = data[coin]

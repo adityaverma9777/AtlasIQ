@@ -44,19 +44,23 @@ function parseRssItems(xmlText: string): Array<{
 }
 
 async function fetchRssWithProxy(rssUrl: string, bypassCache: boolean): Promise<string> {
-    // Try CORS proxy first (more reliable for RSS)
-    const corsProxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(rssUrl)}`
-    
-    try {
-        const text = await fetchTextWithCache(corsProxy, { cacheMinutes: 5, bypassCache })
-        if (text && text.includes('<item>')) {
-            return text
+    const proxies = [
+        `https://corsproxy.io/?${encodeURIComponent(rssUrl)}`,
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(rssUrl)}`,
+        `https://thingproxy.freeboard.io/fetch/${rssUrl}`,
+    ]
+
+    for (const proxyUrl of proxies) {
+        try {
+            const text = await fetchTextWithCache(proxyUrl, { cacheMinutes: 5, bypassCache })
+            if (text && text.includes('<item>')) {
+                return text
+            }
+        } catch {
+            continue
         }
-    } catch {
-        // fall through to next method
     }
 
-    // Fallback: try direct fetch (might work in some browsers)
     try {
         const response = await fetch(rssUrl)
         if (response.ok) {
@@ -64,17 +68,6 @@ async function fetchRssWithProxy(rssUrl: string, bypassCache: boolean): Promise<
         }
     } catch {
         // fall through
-    }
-
-    // Last resort: try via Jina reader
-    try {
-        const readerUrl = `https://r.jina.ai/${rssUrl}`
-        const text = await fetchTextWithCache(readerUrl, { cacheMinutes: 5, bypassCache })
-        if (text && (text.includes('<item>') || text.includes('<rss'))) {
-            return text
-        }
-    } catch {
-        // all methods failed
     }
 
     throw new Error('Failed to fetch Google News RSS feed')
