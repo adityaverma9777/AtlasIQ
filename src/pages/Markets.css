@@ -1,0 +1,262 @@
+.markets-page {
+    padding-bottom: 2rem;
+}
+
+.markets-header {
+    margin-bottom: 1.5rem;
+}
+
+.markets-header h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin: 0 0 0.25rem;
+}
+
+.markets-header p {
+    color: var(--color-text-secondary);
+    margin: 0;
+}
+
+/* country selector */
+.country-selector {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.country-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    font-size: 0.9375rem;
+    cursor: pointer;
+    transition: border-color 0.15s;
+}
+
+.country-btn:hover {
+    border-color: var(--color-primary);
+}
+
+.country-btn .flag {
+    font-size: 1.25rem;
+}
+
+.country-btn .arrow {
+    margin-left: auto;
+    opacity: 0.5;
+}
+
+/* dropdown (desktop) */
+.country-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 0.25rem;
+    min-width: 200px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+    overflow: hidden;
+}
+
+.country-dropdown button {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: none;
+    background: transparent;
+    text-align: left;
+    font-size: 0.9375rem;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.country-dropdown button:hover {
+    background: var(--color-hover);
+}
+
+.country-dropdown button.active {
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+}
+
+/* bottom sheet (mobile) */
+.country-sheet-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 200;
+    display: flex;
+    align-items: flex-end;
+}
+
+.country-sheet {
+    width: 100%;
+    background: var(--color-surface);
+    border-radius: 1rem 1rem 0 0;
+    padding: 1rem;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.country-sheet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.country-sheet-header h3 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.country-sheet-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+.country-sheet button.country-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.875rem 0.5rem;
+    border: none;
+    background: transparent;
+    text-align: left;
+    font-size: 1rem;
+    border-radius: 0.5rem;
+}
+
+.country-sheet button.country-option:hover {
+    background: var(--color-hover);
+}
+
+.country-sheet button.country-option.active {
+    background: var(--color-primary-light);
+}
+
+/* index grid */
+.indices-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.index-card {
+    display: block;
+    padding: 1rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.index-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.index-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+}
+
+.index-name {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.index-symbol {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    background: var(--color-hover);
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+}
+
+.index-card-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.index-price {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.index-change {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.index-card.unavailable {
+    opacity: 0.6;
+    border-style: dashed;
+}
+
+.index-unavailable {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    font-style: italic;
+}
+
+.index-change.positive {
+    color: var(--color-success, #22c55e);
+}
+
+.index-change.negative {
+    color: var(--color-error, #ef4444);
+}
+
+.index-change.neutral {
+    color: var(--color-text-secondary);
+}
+
+.index-updated {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    margin-top: 0.5rem;
+}
+
+/* loading / error */
+.markets-loading,
+.markets-error {
+    padding: 3rem 1rem;
+    text-align: center;
+    color: var(--color-text-secondary);
+}
+
+.markets-error {
+    color: var(--color-error, #ef4444);
+}
+
+/* responsive */
+@media (min-width: 768px) {
+    .indices-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .indices-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

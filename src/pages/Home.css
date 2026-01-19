@@ -1,0 +1,67 @@
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+}
+
+/* World Snapshot Grid */
+.snapshot-grid {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+    .snapshot-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .snapshot-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Two-column layout for headlines + markets */
+.dashboard-columns {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+}
+
+@media (min-width: 1024px) {
+    .dashboard-columns {
+        flex-direction: row;
+        gap: var(--space-6);
+    }
+
+    .dashboard-columns>section {
+        flex: 1;
+    }
+
+    .dashboard-columns>section:first-child {
+        flex: 1.5;
+    }
+}
+
+/* Section wrapper */
+.dashboard-section {
+    min-width: 0;
+}
+
+.loading-text {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    padding: var(--space-4);
+}
+
+.news-load-more {
+    width: 100%;
+    margin-top: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-elevated);
+    color: var(--color-text);
+}

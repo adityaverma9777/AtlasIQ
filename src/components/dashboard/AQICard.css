@@ -1,0 +1,64 @@
+.aqi-card {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-4);
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: var(--transition-fast);
+}
+
+.aqi-card:hover {
+    background: var(--color-bg-hover);
+    border-color: var(--color-border-subtle);
+}
+
+.aqi-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-2);
+}
+
+.aqi-card-label {
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.aqi-card-value {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+}
+
+.aqi-number {
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    line-height: 1;
+}
+
+.aqi-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.aqi-category {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    margin-bottom: var(--space-1);
+}
+
+.aqi-location {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+}
+
+.aqi-loading {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}

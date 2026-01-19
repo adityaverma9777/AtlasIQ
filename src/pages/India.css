@@ -1,0 +1,55 @@
+.india-page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+}
+
+.india-header {
+    margin-bottom: var(--space-2);
+}
+
+.india-header h1 {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-1);
+}
+
+.india-header p {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+.india-section {
+    min-width: 0;
+}
+
+/* Snapshot grid */
+.india-snapshot-grid {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+    .india-snapshot-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .india-snapshot-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Jobs list */
+.jobs-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+@media (min-width: 768px) {
+    .india-header h1 {
+        font-size: var(--text-3xl);
+    }
+}
