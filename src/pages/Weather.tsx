@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { useUserContext } from '../hooks'
-import { fetchDetailedWeather, getCondition, type DetailedWeather } from '../lib/weather'
+import { fetchDetailedWeather, type DetailedWeather } from '../lib/weather'
 import { Loader } from '../components/Loader'
 import {
     Sun, Cloud, CloudRain, CloudLightning, CloudSnow, CloudFog, Snowflake,
