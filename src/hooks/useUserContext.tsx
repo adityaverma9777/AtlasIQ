@@ -112,7 +112,11 @@ interface IpApiResponse {
 
 async function detectLocationByIP(): Promise<UserLocation | null> {
     try {
-        const res = await fetch('https://ipapi.co/json/')
+        // Use API route in production to avoid CORS
+        const isProduction = import.meta.env.PROD
+        const url = isProduction ? '/api/location' : 'https://ipapi.co/json/'
+
+        const res = await fetch(url)
         if (!res.ok) return null
         const data: IpApiResponse = await res.json()
 

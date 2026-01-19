@@ -60,19 +60,31 @@ export async function fetchHeadlines(
     }
 
     // Global mode requires NewsAPI key
-    if (!API_KEY) {
-        throw new Error('News API key not configured. Set VITE_NEWS_API_KEY in your .env file.')
-    }
+    const isProduction = import.meta.env.PROD
 
-    // Global mode: everything endpoint (stable without country/source constraints)
-    const params = new URLSearchParams()
-    params.set('language', 'en')
-    params.set('pageSize', String(pageSize))
-    params.set('page', String(page))
-    params.set('sortBy', 'publishedAt')
-    params.set('apiKey', API_KEY)
-    params.set('q', 'world OR global OR international')
-    const url = `https://newsapi.org/v2/everything?${params.toString()}`
+    let url: string
+    if (isProduction) {
+        // Use our API route in production to avoid CORS
+        const params = new URLSearchParams()
+        params.set('q', 'world OR global OR international')
+        params.set('language', 'en')
+        params.set('pageSize', String(pageSize))
+        params.set('page', String(page))
+        url = `/api/news?${params.toString()}`
+    } else {
+        // Direct API call in development
+        if (!API_KEY) {
+            throw new Error('News API key not configured. Set VITE_NEWS_API_KEY in your .env file.')
+        }
+        const params = new URLSearchParams()
+        params.set('language', 'en')
+        params.set('pageSize', String(pageSize))
+        params.set('page', String(page))
+        params.set('sortBy', 'publishedAt')
+        params.set('apiKey', API_KEY)
+        params.set('q', 'world OR global OR international')
+        url = `https://newsapi.org/v2/everything?${params.toString()}`
+    }
 
     const data = await fetchWithCache<NewsApiResponse>(url, { cacheMinutes: 10, bypassCache })
 
