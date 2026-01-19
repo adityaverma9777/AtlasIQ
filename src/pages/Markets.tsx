@@ -217,7 +217,7 @@ export function Markets() {
                             <div className="index-updated">
                                 {idx.dataAvailable
                                     ? `Updated ${idx.lastUpdated.toLocaleTimeString()}`
-                                    : `Source: Alpha Vantage`}
+                                    : `Source: ${idx.source === 'indianapi' ? 'IndianAPI' : 'Finnhub'}`}
                             </div>
                         </Link>
                     ))}
