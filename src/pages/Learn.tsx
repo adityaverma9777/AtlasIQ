@@ -1,15 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { SectionHeader, InfoCard } from '../components/dashboard'
+import { SectionHeader } from '../components/dashboard'
 import { Loader } from '../components/Loader'
 import { getFeaturedTopics, getKnowledgeArticle, getEntityPath, type KnowledgeEntity } from '../lib'
 import './Learn.css'
-
-const utilities = [
-    { label: 'Dictionary', value: 'Look up', desc: 'Word definitions and meanings' },
-    { label: 'Translation', value: 'Translate', desc: 'Multi-language text translation' },
-    { label: 'Converter', value: 'Convert', desc: 'Units, currency, time zones' },
-]
 
 function getTypeLabel(type: string): string {
     const labels: Record<string, string> = {
@@ -55,11 +49,21 @@ export function Learn() {
             <section className="learn-section">
                 <SectionHeader title="Knowledge Utilities" subtitle="Quick tools for learning" />
                 <div className="utilities-grid">
-                    {utilities.map((item, i) => (
-                        <InfoCard key={i} label={item.label} value={item.value}>
-                            <span>{item.desc}</span>
-                        </InfoCard>
-                    ))}
+                    <Link to="/learn/dictionary" className="utility-card">
+                        <span className="utility-label">Dictionary</span>
+                        <span className="utility-value">Look up</span>
+                        <span className="utility-desc">Word definitions and meanings</span>
+                    </Link>
+                    <Link to="/learn/translate" className="utility-card">
+                        <span className="utility-label">Translation</span>
+                        <span className="utility-value">Translate</span>
+                        <span className="utility-desc">Multi-language text translation</span>
+                    </Link>
+                    <Link to="/learn/convert" className="utility-card">
+                        <span className="utility-label">Converter</span>
+                        <span className="utility-value">Convert</span>
+                        <span className="utility-desc">Units, currency, time zones</span>
+                    </Link>
                 </div>
             </section>
 

@@ -24,3 +24,6 @@ export {
 export { sendChatMessage, type ChatMessage } from './chat'
 export { startScheduler, getLastRun } from './scheduler'
 export { registerScheduledTasks } from './tasks'
+export { lookupWord, type DictionaryEntry, type DictionaryResult, type Meaning, type Definition } from './dictionary'
+export { translate, LANGUAGES, getLanguageName, type Language, type TranslateResult } from './translate'
+export { convertUnit, convertCurrency, getCurrentTimeIn, getUnitsForCategory, getExchangeRates, UNITS, CURRENCIES, TIMEZONES, type UnitCategory, type UnitDef } from './convert'
