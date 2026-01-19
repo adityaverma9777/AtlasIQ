@@ -1,0 +1,324 @@
+.aqi-page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+}
+
+.aqi-page-header {
+    margin-bottom: var(--space-2);
+}
+
+.aqi-page-header h1 {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-1);
+}
+
+.aqi-page-location {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+.aqi-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+}
+
+/* Main AQI Display */
+.aqi-main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+}
+
+@media (min-width: 640px) {
+    .aqi-main {
+        flex-direction: row;
+        align-items: center;
+    }
+}
+
+.aqi-main-value {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+    min-width: 140px;
+}
+
+.aqi-main-number {
+    font-size: 4rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.aqi-main-label {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.aqi-main-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.aqi-main-category {
+    display: inline-block;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-md);
+    color: #000;
+    font-weight: 600;
+    font-size: var(--text-sm);
+    width: fit-content;
+}
+
+.aqi-main-health {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+}
+
+/* Cigarette Equivalent Section */
+.aqi-cigarette-section {
+    padding: 0;
+}
+
+.aqi-cigarette-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+.aqi-cigarette-card svg {
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+}
+
+.aqi-cigarette-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.aqi-cigarette-value {
+    font-size: var(--text-base);
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.aqi-cigarette-note {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+}
+
+/* Pollutants Section */
+.aqi-pollutants h2 {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-4);
+}
+
+.aqi-pollutants-grid {
+    display: grid;
+    gap: var(--space-3);
+    grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 768px) {
+    .aqi-pollutants-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.aqi-pollutant-card {
+    padding: var(--space-4);
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+.aqi-pollutant-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+}
+
+.aqi-pollutant-header svg {
+    color: var(--color-accent);
+}
+
+.aqi-pollutant-name {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.aqi-pollutant-value {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-1);
+    margin-bottom: var(--space-2);
+}
+
+.aqi-pollutant-number {
+    font-size: var(--text-2xl);
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.aqi-pollutant-unit {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+}
+
+.aqi-pollutant-desc {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    line-height: 1.4;
+}
+
+/* Health Recommendations */
+.aqi-recommendations h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-4);
+}
+
+.aqi-recommendations h2 svg {
+    color: var(--color-accent);
+}
+
+.aqi-recommendations-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+.aqi-recommendations-list li {
+    position: relative;
+    padding-left: var(--space-5);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+}
+
+.aqi-recommendations-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 6px;
+    height: 6px;
+    background: var(--color-accent);
+    border-radius: 50%;
+}
+
+/* AQI Scale Reference */
+.aqi-scale-section h2 {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-4);
+}
+
+.aqi-scale-grid {
+    display: grid;
+    gap: var(--space-3);
+    grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 768px) {
+    .aqi-scale-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .aqi-scale-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+}
+
+.aqi-scale-item {
+    padding: var(--space-3);
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+.aqi-scale-color {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    margin-bottom: var(--space-2);
+}
+
+.aqi-scale-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-1);
+}
+
+.aqi-scale-label {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.aqi-scale-range {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+}
+
+.aqi-scale-desc {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    line-height: 1.4;
+}
+
+/* Footer */
+.aqi-footer {
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+    text-align: center;
+}
+
+.aqi-footer p {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-2);
+}
+
+.aqi-footer-note {
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.5;
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+    .aqi-page-header h1 {
+        font-size: var(--text-3xl);
+    }
+}

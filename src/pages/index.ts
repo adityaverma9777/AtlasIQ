@@ -7,3 +7,6 @@ export { Markets } from './Markets'
 export { Dictionary } from './Dictionary'
 export { Translate } from './Translate'
 export { Converter } from './Converter'
+export { Weather } from './Weather'
+export { AirQuality } from './AirQuality'
+

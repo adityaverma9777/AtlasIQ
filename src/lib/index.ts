@@ -8,7 +8,8 @@ export {
 } from './news'
 export { fetchCryptoMarkets, type MarketData } from './markets'
 export { fetchWeather, fetchClimateAlerts, type WeatherData, type ClimateAlert, type WeatherOptions } from './weather'
-export { fetchAQI, healthImplications, aqiColors, categoryLabels, type AQIData, type AQICategory, type AQIOptions } from './aqi'
+export { fetchClimateAlerts as fetchRealClimateAlerts, type ClimateAlert as RealClimateAlert, type AlertType, type AlertSeverity, type AlertOptions } from './alerts'
+export { fetchAQI, healthImplications, aqiColors, categoryLabels, categoryShortLabels, getCigaretteEquivalent, getSeverityLevel, type AQIData, type AQICategory, type AQIOptions } from './aqi'
 export { search, type SearchResult, type SearchResults, type IndiaResult, type LearnResult } from './search'
 export { getEntity, getEntityPath, getCachedEntity, type EntityType, type EntityData, type EntityFact, type EntitySource } from './entity'
 export { fetchWikipediaSummary, checkWikipediaTopic, type WikipediaArticle, type WikipediaImage, type WikipediaSection } from './wikipedia'
@@ -27,3 +28,9 @@ export { registerScheduledTasks } from './tasks'
 export { lookupWord, type DictionaryEntry, type DictionaryResult, type Meaning, type Definition } from './dictionary'
 export { translate, LANGUAGES, getLanguageName, type Language, type TranslateResult } from './translate'
 export { convertUnit, convertCurrency, getCurrentTimeIn, getUnitsForCategory, getExchangeRates, UNITS, CURRENCIES, TIMEZONES, type UnitCategory, type UnitDef } from './convert'
+
+// India News Engine
+export { fetchIndiaNews, type IndiaNewsArticle } from './indiaNews'
+
+// India Governance Engine
+export * from './india'

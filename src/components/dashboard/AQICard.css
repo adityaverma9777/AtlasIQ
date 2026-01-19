@@ -7,6 +7,8 @@
     border-radius: var(--radius-lg);
     text-decoration: none;
     transition: var(--transition-fast);
+    position: relative;
+    overflow: hidden;
 }
 
 .aqi-card:hover {
@@ -14,6 +16,7 @@
     border-color: var(--color-border-subtle);
 }
 
+/* Header with label and cigarette icon */
 .aqi-card-header {
     display: flex;
     align-items: center;
@@ -28,10 +31,151 @@
     letter-spacing: 0.05em;
 }
 
+/* Cigarette icon container with smoke animation */
+.aqi-cigarette {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.aqi-cigarette svg {
+    width: 18px;
+    height: 18px;
+    color: var(--color-text-muted);
+    transition: color 0.3s ease;
+}
+
+/* Smoke particles container */
+.aqi-smoke {
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+}
+
+.smoke-particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: currentColor;
+    border-radius: 50%;
+    opacity: 0;
+    filter: blur(2px);
+}
+
+/* Smoke animation - intensity based on severity */
+@keyframes smoke-rise {
+    0% {
+        opacity: 0.4;
+        transform: translateY(0) translateX(0) scale(0.5);
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-15px) translateX(var(--smoke-drift, 3px)) scale(1.2);
+    }
+}
+
+/* Severity level 0 - no animation */
+.aqi-card[data-severity="0"] .smoke-particle {
+    display: none;
+}
+
+/* Severity level 1 - subtle */
+.aqi-card[data-severity="1"] .smoke-particle {
+    animation: smoke-rise 3s ease-out infinite;
+    color: rgba(150, 150, 150, 0.3);
+}
+
+.aqi-card[data-severity="1"] .smoke-particle:nth-child(2) {
+    animation-delay: 1.5s;
+    --smoke-drift: -3px;
+}
+
+/* Severity level 2 */
+.aqi-card[data-severity="2"] .smoke-particle {
+    animation: smoke-rise 2.5s ease-out infinite;
+    color: rgba(150, 150, 150, 0.4);
+}
+
+.aqi-card[data-severity="2"] .smoke-particle:nth-child(2) {
+    animation-delay: 1s;
+    --smoke-drift: -4px;
+}
+
+.aqi-card[data-severity="2"] .smoke-particle:nth-child(3) {
+    animation-delay: 2s;
+    --smoke-drift: 5px;
+    left: 55%;
+}
+
+/* Severity level 3 */
+.aqi-card[data-severity="3"] .smoke-particle {
+    animation: smoke-rise 2s ease-out infinite;
+    color: rgba(130, 130, 130, 0.5);
+}
+
+.aqi-card[data-severity="3"] .smoke-particle:nth-child(2) {
+    animation-delay: 0.7s;
+    --smoke-drift: -5px;
+}
+
+.aqi-card[data-severity="3"] .smoke-particle:nth-child(3) {
+    animation-delay: 1.4s;
+    --smoke-drift: 6px;
+    left: 60%;
+}
+
+/* Severity level 4 - intense */
+.aqi-card[data-severity="4"] .smoke-particle {
+    animation: smoke-rise 1.5s ease-out infinite;
+    color: rgba(100, 100, 100, 0.6);
+    width: 8px;
+    height: 8px;
+}
+
+.aqi-card[data-severity="4"] .smoke-particle:nth-child(2) {
+    animation-delay: 0.5s;
+    --smoke-drift: -6px;
+}
+
+.aqi-card[data-severity="4"] .smoke-particle:nth-child(3) {
+    animation-delay: 1s;
+    --smoke-drift: 7px;
+    left: 65%;
+}
+
+/* Severity level 5 - extreme */
+.aqi-card[data-severity="5"] .smoke-particle {
+    animation: smoke-rise 1.2s ease-out infinite;
+    color: rgba(80, 80, 80, 0.7);
+    width: 10px;
+    height: 10px;
+}
+
+.aqi-card[data-severity="5"] .smoke-particle:nth-child(2) {
+    animation-delay: 0.4s;
+    --smoke-drift: -7px;
+}
+
+.aqi-card[data-severity="5"] .smoke-particle:nth-child(3) {
+    animation-delay: 0.8s;
+    --smoke-drift: 8px;
+    left: 70%;
+}
+
+/* Main value display */
 .aqi-card-value {
     display: flex;
     align-items: baseline;
     gap: var(--space-2);
+    margin-bottom: var(--space-2);
 }
 
 .aqi-number {
@@ -40,17 +184,74 @@
     line-height: 1;
 }
 
-.aqi-indicator {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
+/* AQI Scale Bar */
+.aqi-scale-bar {
+    display: flex;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: var(--space-2);
+    position: relative;
 }
 
+.aqi-scale-segment {
+    flex: 1;
+    transition: opacity 0.3s ease;
+}
+
+.aqi-scale-segment.good {
+    background: #00e400;
+}
+
+.aqi-scale-segment.moderate {
+    background: #ffff00;
+}
+
+.aqi-scale-segment.poor {
+    background: #ff7e00;
+}
+
+.aqi-scale-segment.very-poor {
+    background: #ff0000;
+}
+
+.aqi-scale-segment.hazardous {
+    background: #7e0023;
+}
+
+/* Scale bar pointer */
+.aqi-scale-pointer {
+    position: absolute;
+    top: -4px;
+    width: 4px;
+    height: 14px;
+    background: var(--color-text-primary);
+    border-radius: 2px;
+    transform: translateX(-50%);
+    transition: left 0.5s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Category and cigarette equivalent */
 .aqi-category {
     font-size: var(--text-sm);
     font-weight: 500;
     margin-bottom: var(--space-1);
+}
+
+.aqi-cigarette-text {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    margin-bottom: var(--space-1);
+}
+
+.aqi-cigarette-text svg {
+    width: 12px;
+    height: 12px;
+    opacity: 0.7;
 }
 
 .aqi-location {
@@ -61,4 +262,130 @@
 .aqi-loading {
     color: var(--color-text-muted);
     font-size: var(--text-sm);
+}
+
+/* Indicator dot (kept for header) */
+.aqi-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* Premium hover effects */
+a.aqi-card {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease,
+        background 0.2s ease;
+}
+
+a.aqi-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--color-accent);
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(99, 102, 241, 0.1),
+        0 0 20px rgba(99, 102, 241, 0.08);
+    background: var(--color-bg-hover);
+}
+
+a.aqi-card:active {
+    transform: translateY(0);
+}
+
+/* Loading skeleton */
+.aqi-card-loading {
+    pointer-events: none;
+}
+
+.aqi-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    flex: 1;
+    padding-top: var(--space-2);
+}
+
+.aqi-skeleton .skeleton-value,
+.aqi-skeleton .skeleton-bar,
+.aqi-skeleton .skeleton-text {
+    background: linear-gradient(90deg,
+            var(--color-bg-hover) 25%,
+            var(--color-border) 50%,
+            var(--color-bg-hover) 75%);
+    background-size: 200% 100%;
+    animation: aqi-skeleton-shimmer 1.5s ease-in-out infinite;
+    border-radius: var(--radius-sm);
+}
+
+.aqi-skeleton .skeleton-value {
+    width: 50%;
+    height: 28px;
+}
+
+.aqi-skeleton .skeleton-bar {
+    width: 100%;
+    height: 6px;
+}
+
+.aqi-skeleton .skeleton-text {
+    width: 70%;
+    height: 14px;
+}
+
+@keyframes aqi-skeleton-shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Error state */
+.aqi-card-error-state {
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.aqi-error {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+}
+
+.aqi-error-text {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+}
+
+.aqi-retry-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    font-size: var(--text-xs);
+    font-weight: 500;
+    color: var(--color-accent);
+    background: transparent;
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    width: fit-content;
+}
+
+.aqi-retry-button:hover {
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.aqi-retry-button svg {
+    transition: transform 0.3s ease;
+}
+
+.aqi-retry-button:hover svg {
+    transform: rotate(180deg);
 }

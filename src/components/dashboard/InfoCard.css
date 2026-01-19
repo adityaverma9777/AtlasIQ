@@ -4,8 +4,39 @@
     border-radius: var(--radius-lg);
     padding: var(--space-4);
     min-height: 120px;
+    position: relative;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease,
+        background 0.2s ease;
+}
+
+.info-card-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    height: 100%;
+}
+
+.info-card-text {
     display: flex;
     flex-direction: column;
+    flex: 1;
+}
+
+.info-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-accent);
+    opacity: 0.9;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.info-card-icon svg {
+    width: 48px;
+    height: 48px;
 }
 
 .info-card-label {
@@ -31,6 +62,145 @@
     line-height: var(--leading-relaxed);
 }
 
+/* Link card - premium hover effects */
+.info-card-link {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.info-card-link:hover {
+    transform: translateY(-2px);
+    border-color: var(--color-accent);
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(99, 102, 241, 0.1),
+        0 0 20px rgba(99, 102, 241, 0.08);
+    background: var(--color-bg-hover);
+}
+
+.info-card-link:hover .info-card-icon {
+    transform: scale(1.05);
+    opacity: 1;
+}
+
+.info-card-link:active {
+    transform: translateY(0);
+}
+
+/* Loading skeleton styles */
+.info-card-loading {
+    pointer-events: none;
+}
+
+.info-card-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.skeleton-label,
+.skeleton-value,
+.skeleton-content {
+    background: linear-gradient(90deg,
+            var(--color-bg-hover) 25%,
+            var(--color-border) 50%,
+            var(--color-bg-hover) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+    border-radius: var(--radius-sm);
+}
+
+.skeleton-label {
+    width: 60%;
+    height: 12px;
+}
+
+.skeleton-value {
+    width: 80%;
+    height: 24px;
+}
+
+.skeleton-content {
+    width: 90%;
+    height: 14px;
+}
+
+@keyframes skeleton-shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.skeleton-icon {
+    opacity: 0.3;
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+
+    0%,
+    100% {
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Error state styles */
+.info-card-error-state {
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.info-card-error {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.error-message {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+}
+
+.retry-button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    color: var(--color-accent);
+    background: transparent;
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    width: fit-content;
+}
+
+.retry-button:hover {
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.retry-button:active {
+    transform: scale(0.98);
+}
+
+.retry-button svg {
+    transition: transform 0.3s ease;
+}
+
+.retry-button:hover svg {
+    transform: rotate(180deg);
+}
+
+/* Responsive */
 @media (min-width: 768px) {
     .info-card {
         padding: var(--space-5);
@@ -40,12 +210,9 @@
     .info-card-value {
         font-size: var(--text-2xl);
     }
-}
 
-.info-card-link {
-    transition: border-color var(--transition-fast);
-}
-
-.info-card-link:hover {
-    border-color: var(--color-accent);
+    .info-card-icon svg {
+        width: 56px;
+        height: 56px;
+    }
 }

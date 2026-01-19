@@ -15,8 +15,11 @@ export function Header() {
         <header className="header">
             <div className="container header-inner">
                 <Link to="/" className="logo">
-                    <div className="logo-mark" />
-                    <span>AtlasIQ</span>
+                    <img src="/logo.png" alt="AtlasIQ" className="logo-mark" />
+                    <span className="logo-text">
+                        <span className="logo-atlas">Atlas</span>
+                        <span className="logo-iq">IQ</span>
+                    </span>
                 </Link>
 
                 <nav className="nav">

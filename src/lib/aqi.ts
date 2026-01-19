@@ -62,6 +62,50 @@ export const categoryLabels: Record<AQICategory, string> = {
     'hazardous': 'Hazardous',
 }
 
+// Short labels for compact display
+export const categoryShortLabels: Record<AQICategory, string> = {
+    'good': 'Good',
+    'moderate': 'Moderate',
+    'unhealthy-sensitive': 'Poor',
+    'unhealthy': 'Unhealthy',
+    'very-unhealthy': 'Very Poor',
+    'hazardous': 'Hazardous',
+}
+
+/**
+ * Convert PM2.5 concentration to equivalent cigarettes per day.
+ * Based on Berkeley Earth study: 22 μg/m³ PM2.5 ≈ 1 cigarette/day
+ * Reference: https://berkeleyearth.org/air-pollution-and-cigarette-equivalence/
+ */
+export function getCigaretteEquivalent(pm25: number): { count: number; text: string } {
+    const cigarettes = pm25 / 22
+    const rounded = Math.round(cigarettes * 10) / 10
+
+    if (rounded < 0.5) {
+        return { count: rounded, text: 'Minimal exposure' }
+    } else if (rounded < 1) {
+        return { count: rounded, text: `~${rounded} cigarette/day equivalent` }
+    } else {
+        const display = rounded >= 10 ? Math.round(rounded) : rounded
+        return { count: rounded, text: `~${display} cigarettes/day equivalent` }
+    }
+}
+
+/**
+ * Get severity level (0-4) for animation intensity
+ */
+export function getSeverityLevel(category: AQICategory): number {
+    const levels: Record<AQICategory, number> = {
+        'good': 0,
+        'moderate': 1,
+        'unhealthy-sensitive': 2,
+        'unhealthy': 3,
+        'very-unhealthy': 4,
+        'hazardous': 5,
+    }
+    return levels[category]
+}
+
 export interface AQIOptions {
     lat: number
     lon: number

@@ -1,8 +1,9 @@
+import type { ReactNode } from 'react'
 import './SectionHeader.css'
 
 interface SectionHeaderProps {
     title: string
-    subtitle?: string
+    subtitle?: ReactNode
     updatedAt?: Date | null
     onRefresh?: () => void
     loading?: boolean

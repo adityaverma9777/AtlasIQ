@@ -1,21 +1,33 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { SectionHeader, InfoCard, ListItem, MarketRow, AlertItem, AQICard, NewsFilters } from '../components/dashboard'
-import { Loader, InlineLoader } from '../components/Loader'
+import { Loader } from '../components/Loader'
 import { useAsync, useUserContext } from '../hooks'
 import {
     fetchHeadlines,
     fetchCryptoMarkets,
     fetchWeather,
-    fetchClimateAlerts,
+    fetchRealClimateAlerts,
     fetchAQI,
     getEntityPath,
     type Headline,
     type MarketData,
     type NewsCountryCode,
 } from '../lib'
-import { cityToSlug } from '../data'
 import { cacheNewsArticle } from '../data/news'
+import { Sun, Cloud, CloudRain, CloudLightning, CloudSnow, CloudFog, Snowflake } from 'lucide-react'
 import './Home.css'
+
+// map weather code to lucide icon
+function getWeatherIcon(code: number): ReactNode {
+    if (code === 0) return <Sun />
+    if (code <= 3) return <Cloud />
+    if (code <= 49) return <CloudFog />
+    if (code <= 69) return <CloudRain />
+    if (code <= 79) return <Snowflake />
+    if (code <= 84) return <CloudSnow />
+    if (code <= 94) return <CloudLightning />
+    return <Cloud />
+}
 
 const fallbackHeadlines: Headline[] = [
     {
@@ -136,7 +148,7 @@ export function Home() {
         [location.lat, location.lon]
     )
     const alerts = useAsync(
-        () => fetchClimateAlerts({ lat: location.lat, lon: location.lon }),
+        () => fetchRealClimateAlerts({ lat: location.lat, lon: location.lon, name: location.city }),
         [location.lat, location.lon]
     )
 
@@ -156,26 +168,42 @@ export function Home() {
             <section className="dashboard-section">
                 <SectionHeader title="World Snapshot" subtitle="Real-time global overview" />
                 <div className="snapshot-grid">
-                    <InfoCard label="Headlines" value={headlineCount > 0 ? `${headlineCount} stories` : '—'}>
-                        {headlineLoading && <InlineLoader />}
-                        {headlineError && <span>Unable to fetch</span>}
+                    <InfoCard
+                        label="Headlines"
+                        value={headlineCount > 0 ? `${headlineCount} stories` : undefined}
+                        loading={headlineLoading}
+                        error={headlineError}
+                        onRetry={refreshHeadlines}
+                    >
                         {headlineItems.length > 0 && <span>Top stories from global sources</span>}
                     </InfoCard>
-                    <InfoCard label="Markets" value={marketStatus}>
-                        {markets.loading && <InlineLoader />}
-                        {markets.error && <span>Unable to fetch</span>}
-                        {markets.data && <span>Crypto markets update</span>}
+                    <InfoCard
+                        label="Markets"
+                        value={marketStatus}
+                        href="/markets"
+                        loading={markets.loading}
+                        error={markets.error}
+                        onRetry={markets.refresh}
+                    >
+                        {markets.data && <span>View markets →</span>}
                     </InfoCard>
                     <InfoCard
                         label={weather.data?.location ?? 'Weather'}
-                        value={weather.data ? `${weather.data.temperature}°C` : '—'}
-                        href={getEntityPath('weather', cityToSlug(location.city || 'weather'))}
+                        value={weather.data ? `${weather.data.temperature}°C` : undefined}
+                        href="/weather"
+                        icon={weather.data ? getWeatherIcon(weather.data.weatherCode) : undefined}
+                        loading={weather.loading}
+                        error={weather.error}
+                        onRetry={weather.refresh}
                     >
-                        {weather.loading && <InlineLoader />}
-                        {weather.error && <span>Unable to fetch</span>}
                         {weather.data && <span>{weather.data.condition}</span>}
                     </InfoCard>
-                    <AQICard data={aqi.data} loading={aqi.loading} error={aqi.error} />
+                    <AQICard
+                        data={aqi.data}
+                        loading={aqi.loading}
+                        error={aqi.error}
+                        onRetry={aqi.refresh}
+                    />
                 </div>
             </section>
 
@@ -267,10 +295,16 @@ export function Home() {
                     {alerts.loading && <Loader size="sm" text="Checking alerts..." />}
                     {alerts.error && <p className="no-alerts">Unable to check alerts</p>}
                     {alerts.data && alerts.data.length === 0 && (
-                        <p className="no-alerts">No active alerts</p>
+                        <p className="no-alerts">No active alerts for your region.</p>
                     )}
-                    {alerts.data?.map((alert, i) => (
-                        <AlertItem key={i} title={alert.title} severity={alert.severity} />
+                    {alerts.data?.map((alert) => (
+                        <AlertItem
+                            key={alert.id}
+                            type={alert.type}
+                            title={alert.title}
+                            summary={alert.summary}
+                            severity={alert.severity}
+                        />
                     ))}
                 </div>
             </section>
