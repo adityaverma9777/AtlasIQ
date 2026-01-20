@@ -1,7 +1,22 @@
-/* Helvetica font for logo */
 @font-face {
     font-family: 'Helvetica';
     src: url('/fonts/Helvetica.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Aylia';
+    src: url('/fonts/Aylia.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Melbrick';
+    src: url('/fonts/Melbrick.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
@@ -21,36 +36,49 @@
     align-items: center;
     justify-content: space-between;
     height: 100%;
+    padding: 0 12px;
+}
+
+@media (min-width: 768px) {
+    .header-inner {
+        padding: 0 24px;
+    }
 }
 
 .logo {
     display: flex;
     align-items: center;
-    gap: var(--space-3);
+    gap: var(--space-2);
     text-decoration: none;
 }
 
 .logo-text {
     display: inline-flex;
     align-items: baseline;
-    font-family: 'Helvetica', Arial, sans-serif;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 400;
     color: #ffffff;
     position: relative;
 }
 
+@media (min-width: 768px) {
+    .logo-text {
+        font-size: 1.5rem;
+    }
+}
+
 .logo-atlas {
-    letter-spacing: 0.5px;
+    font-family: 'Aylia', 'Helvetica', sans-serif;
+    letter-spacing: 1px;
 }
 
 .logo-iq {
+    font-family: 'Helvetica', Arial, sans-serif;
     letter-spacing: 0.5px;
-    margin-left: 2px;
+    margin-left: 3px;
     font-weight: 500;
 }
 
-/* Premium accent underline */
 .logo-text::after {
     content: '';
     position: absolute;
@@ -73,9 +101,16 @@
 }
 
 .logo-mark {
-    width: 70px;
-    height: 70px;
+    width: 50px;
+    height: 50px;
     object-fit: contain;
+}
+
+@media (min-width: 768px) {
+    .logo-mark {
+        width: 70px;
+        height: 70px;
+    }
 }
 
 .nav {

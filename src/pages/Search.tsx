@@ -1,108 +1,195 @@
+/**
+ * Search Page - Article Synthesis Mode
+ * 
+ * When user searches any topic, this page:
+ * 1. Gathers information from news + Wikipedia + trusted sources
+ * 2. Synthesizes a single, clean, original article
+ * 3. Displays the full article inline (NOT a link list)
+ */
+
 import { useState, useEffect } from 'react'
-import { useSearchParams, Link } from 'react-router-dom'
-import { search, getEntityPath, type SearchResult as SearchResultType } from '../lib'
-import { SectionHeader } from '../components/dashboard'
-import { Loader, InlineLoader } from '../components/Loader'
+import { useSearchParams, useNavigate } from 'react-router-dom'
+import { ArticleView, ArticleSkeleton } from '../components/ArticleView'
+import { getOrSynthesizeArticle, resolveArticleTopic, type SynthesizedArticle } from '../lib/articleSynthesizer'
+import { Search as SearchIcon, ArrowLeft } from 'lucide-react'
 import './Search.css'
 
 export function Search() {
     const [searchParams] = useSearchParams()
+    const navigate = useNavigate()
     const query = searchParams.get('q') || ''
 
-    const [result, setResult] = useState<SearchResultType | null>(null)
+    const [article, setArticle] = useState<SynthesizedArticle | null>(null)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [resolvedTopic, setResolvedTopic] = useState<string>('')
+    const [searchInput, setSearchInput] = useState(query)
 
+    // Synthesize article when query changes
     useEffect(() => {
         if (!query.trim()) {
-            setResult(null)
+            setArticle(null)
             return
         }
 
-        setLoading(true)
-        setError(null)
+        let cancelled = false
 
-        search(query)
-            .then((res) => {
-                setResult(res)
-                setLoading(false)
-            })
-            .catch(() => {
-                setError('Search failed. Please try again.')
-                setLoading(false)
-            })
+        const synthesize = async () => {
+            setLoading(true)
+            setError(null)
+            setArticle(null)
+
+            try {
+                // Resolve to best topic name
+                const topic = await resolveArticleTopic(query)
+                if (cancelled) return
+                setResolvedTopic(topic)
+
+                // Synthesize article
+                const result = await getOrSynthesizeArticle(topic)
+                if (cancelled) return
+
+                if (result) {
+                    setArticle(result)
+                } else {
+                    setError(`We couldn't find enough information about "${topic}" to write an article.`)
+                }
+            } catch (err) {
+                if (!cancelled) {
+                    setError('Something went wrong. Please try a different search.')
+                }
+            } finally {
+                if (!cancelled) {
+                    setLoading(false)
+                }
+            }
+        }
+
+        synthesize()
+
+        return () => {
+            cancelled = true
+        }
     }, [query])
 
-    const article = result?.article
+    // Handle new search
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault()
+        if (searchInput.trim() && searchInput.trim() !== query) {
+            navigate(`/search?q=${encodeURIComponent(searchInput.trim())}`)
+        }
+    }
 
     return (
-        <div className="container search-page">
-            <header className="search-header">
-                <h1>
-                    Search: <span className="search-query">{query}</span>
-                </h1>
-                {loading && <InlineLoader text="Searching encyclopedia..." />}
-            </header>
-
-            {/* loading state */}
-            {loading && (
-                <div className="search-loading">
-                    <Loader size="lg" text={`Looking up "${result?.searchedTopic || query}"...`} />
+        <div className="search-page">
+            {/* Sticky Search Bar */}
+            <div className="search-bar-sticky">
+                <div className="container">
+                    <form className="search-bar-form" onSubmit={handleSearch}>
+                        <button
+                            type="button"
+                            className="search-back-btn"
+                            onClick={() => navigate('/')}
+                            aria-label="Go back"
+                        >
+                            <ArrowLeft size={20} />
+                        </button>
+                        <div className="search-bar-box">
+                            <SearchIcon className="search-bar-icon" size={18} />
+                            <input
+                                type="text"
+                                value={searchInput}
+                                onChange={(e) => setSearchInput(e.target.value)}
+                                placeholder="Search any topic..."
+                                className="search-bar-input"
+                            />
+                        </div>
+                    </form>
                 </div>
-            )}
+            </div>
 
-            {/* error state */}
-            {error && !loading && (
-                <div className="no-results">
-                    <h2>Search Error</h2>
-                    <p>{error}</p>
-                </div>
-            )}
+            {/* Main Content */}
+            <div className="container search-content">
+                {/* Loading State */}
+                {loading && (
+                    <div className="search-loading">
+                        <div className="loading-message">
+                            <div className="loading-spinner" />
+                            <p className="loading-text">
+                                Writing an article about <strong>{resolvedTopic || query}</strong>...
+                            </p>
+                            <p className="loading-subtext">
+                                Gathering information from trusted sources
+                            </p>
+                        </div>
+                        <ArticleSkeleton />
+                    </div>
+                )}
 
-            {/* no result found */}
-            {!loading && !error && result && !result.found && (
-                <div className="no-results">
-                    <h2>No encyclopedia article found</h2>
-                    <p>We couldn't find a Wikipedia article for "{result.searchedTopic || query}".</p>
-                    <p className="no-results-hint">Try a different topic or check your spelling.</p>
-                </div>
-            )}
-
-            {/* article found */}
-            {!loading && article && (
-                <div className="search-results">
-                    <section className="search-section knowledge-result">
-                        <SectionHeader title="Encyclopedia Article" subtitle="From Wikipedia" />
-                        <div className="knowledge-card">
-                            {article.heroImage && (
-                                <img
-                                    src={article.heroImage.url}
-                                    alt={article.title}
-                                    className="knowledge-card-image"
-                                    onError={(e) => {
-                                        (e.target as HTMLImageElement).style.display = 'none'
-                                    }}
-                                />
-                            )}
-                            <div className="knowledge-card-content">
-                                <h3>{article.title}</h3>
-                                <p className="knowledge-summary">{article.overview}</p>
-                                {article.sections[0] && (
-                                    <p className="knowledge-preview">
-                                        {article.sections[0].content.slice(0, 250)}...
-                                    </p>
-                                )}
-                                <Link
-                                    to={getEntityPath('learn', article.slug)}
-                                    className="knowledge-link"
-                                >
-                                    Read full article →
-                                </Link>
+                {/* Error State */}
+                {!loading && error && (
+                    <div className="search-error">
+                        <div className="error-icon">📭</div>
+                        <h2>No Article Available</h2>
+                        <p>{error}</p>
+                        <div className="error-suggestions">
+                            <p>Try searching for:</p>
+                            <div className="suggestion-chips">
+                                {['Climate change', 'Artificial intelligence', 'Indian economy', 'Space exploration'].map(topic => (
+                                    <button
+                                        key={topic}
+                                        className="suggestion-chip"
+                                        onClick={() => navigate(`/search?q=${encodeURIComponent(topic)}`)}
+                                    >
+                                        {topic}
+                                    </button>
+                                ))}
                             </div>
                         </div>
-                    </section>
-                </div>
-            )}
+                    </div>
+                )}
+
+                {/* Article Display */}
+                {!loading && article && (
+                    <ArticleView
+                        article={article}
+                        showFollowUp={true}
+                        onAskAtlas={() => {
+                            // Dispatch custom event to open Atlas chat with article context
+                            const event = new CustomEvent('openAtlasChat', {
+                                detail: {
+                                    context: `I'm reading an article about "${article.title}". ${article.summary}`,
+                                    topic: article.topic,
+                                }
+                            })
+                            window.dispatchEvent(event)
+                        }}
+                    />
+                )}
+
+                {/* Empty State (no query) */}
+                {!query && !loading && (
+                    <div className="search-empty">
+                        <div className="empty-icon">🔍</div>
+                        <h2>Search any topic</h2>
+                        <p>We'll write a comprehensive article for you, synthesizing information from trusted sources.</p>
+                        <div className="popular-topics">
+                            <p>Popular topics:</p>
+                            <div className="suggestion-chips">
+                                {['Electric vehicles', 'Quantum computing', 'Indian startups', 'Renewable energy'].map(topic => (
+                                    <button
+                                        key={topic}
+                                        className="suggestion-chip"
+                                        onClick={() => navigate(`/search?q=${encodeURIComponent(topic)}`)}
+                                    >
+                                        {topic}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     )
 }

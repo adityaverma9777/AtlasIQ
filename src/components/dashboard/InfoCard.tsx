@@ -14,7 +14,6 @@ interface InfoCardProps {
     onRetry?: () => void
 }
 
-// Loading skeleton component
 function CardSkeleton() {
     return (
         <div className="info-card-skeleton">
@@ -25,7 +24,6 @@ function CardSkeleton() {
     )
 }
 
-// Error state with retry button
 function CardError({ message, onRetry }: { message: string; onRetry?: () => void }) {
     return (
         <div className="info-card-error">
@@ -45,7 +43,6 @@ function CardError({ message, onRetry }: { message: string; onRetry?: () => void
 }
 
 export function InfoCard({ label, value, children, href, icon, loading, error, onRetry }: InfoCardProps) {
-    // Skeleton loading state
     if (loading) {
         const content = (
             <div className="info-card-inner">
@@ -63,7 +60,6 @@ export function InfoCard({ label, value, children, href, icon, loading, error, o
         return <article className="info-card info-card-loading">{content}</article>
     }
 
-    // Error state
     if (error) {
         const content = (
             <div className="info-card-inner">
@@ -81,7 +77,6 @@ export function InfoCard({ label, value, children, href, icon, loading, error, o
         return <article className="info-card info-card-error-state">{content}</article>
     }
 
-    // Normal state
     const content = (
         <div className="info-card-inner">
             <div className="info-card-text">

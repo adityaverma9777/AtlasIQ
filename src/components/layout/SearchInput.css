@@ -36,7 +36,6 @@
     pointer-events: none;
 }
 
-/* Mobile toggle */
 .search-toggle {
     display: flex;
     align-items: center;

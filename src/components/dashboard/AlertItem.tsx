@@ -9,7 +9,6 @@ interface AlertItemProps {
     severity: AlertSeverity | 'moderate' | 'severe' | 'extreme'
 }
 
-// Map severity to CSS class (handle both old and new severity types)
 function getSeverityClass(severity: AlertItemProps['severity']): string {
     const mapping: Record<string, string> = {
         info: 'info',
@@ -22,7 +21,6 @@ function getSeverityClass(severity: AlertItemProps['severity']): string {
     return mapping[severity] || 'info'
 }
 
-// Get icon component based on alert type
 function AlertIcon({ type }: { type?: AlertType }) {
     const iconProps = { size: 18, strokeWidth: 2 }
 

@@ -8,19 +8,16 @@ export function LocationSelector() {
     const [open, setOpen] = useState(false)
     const ref = useRef<HTMLDivElement>(null)
 
-    // local selection state
     const [country, setCountry] = useState(location.country)
     const [state, setState] = useState(location.state || '')
     const [city, setCity] = useState(location.city || '')
 
-    // sync with context on mount
     useEffect(() => {
         setCountry(location.country)
         setState(location.state || '')
         setCity(location.city || '')
     }, [location.country, location.state, location.city])
 
-    // close on outside click
     useEffect(() => {
         function handleClick(e: MouseEvent) {
             if (ref.current && !ref.current.contains(e.target as Node)) {

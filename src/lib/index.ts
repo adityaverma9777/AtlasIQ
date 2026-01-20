@@ -34,3 +34,15 @@ export { fetchIndiaNews, type IndiaNewsArticle } from './indiaNews'
 
 // India Governance Engine
 export * from './india'
+
+// Article Synthesis Engine
+export {
+    synthesizeArticle,
+    getOrSynthesizeArticle,
+    resolveArticleTopic,
+    hasIndiaRelevance,
+    type SynthesizedArticle,
+    type ArticleSection as SynthesizedSection,
+    type SourceAttribution,
+    type ImageData,
+} from './articleSynthesizer'

@@ -62,7 +62,6 @@
     line-height: var(--leading-relaxed);
 }
 
-/* Link card - premium hover effects */
 .info-card-link {
     text-decoration: none;
     cursor: pointer;
@@ -87,7 +86,6 @@
     transform: translateY(0);
 }
 
-/* Loading skeleton styles */
 .info-card-loading {
     pointer-events: none;
 }
@@ -152,7 +150,6 @@
     }
 }
 
-/* Error state styles */
 .info-card-error-state {
     border-color: rgba(239, 68, 68, 0.3);
 }
@@ -200,7 +197,6 @@
     transform: rotate(180deg);
 }
 
-/* Responsive */
 @media (min-width: 768px) {
     .info-card {
         padding: var(--space-5);

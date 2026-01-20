@@ -10,17 +10,12 @@ interface AQICardProps {
     onRetry?: () => void
 }
 
-/**
- * Calculate pointer position on scale bar (0-100%)
- * European AQI scale: 0-20 Good, 20-40 Moderate, 40-60 Poor, 60-80 Unhealthy, 80-100+ Hazardous
- */
+// Maps AQI value to position on the scale bar (0-100%)
 function getScalePosition(aqi: number): number {
-    // Map AQI to percentage (capped at 120 for display)
     const capped = Math.min(aqi, 120)
     return (capped / 120) * 100
 }
 
-// Skeleton loading state
 function AQISkeleton() {
     return (
         <div className="aqi-card aqi-card-loading">
@@ -36,7 +31,6 @@ function AQISkeleton() {
     )
 }
 
-// Error state with retry
 function AQIError({ onRetry }: { onRetry?: () => void }) {
     return (
         <div className="aqi-card aqi-card-error-state">
@@ -78,12 +72,10 @@ export function AQICard({ data, loading, error, onRetry }: AQICardProps) {
 
     return (
         <Link to="/air-quality" className="aqi-card" data-severity={severity}>
-            {/* Header with label and animated cigarette icon */}
             <div className="aqi-card-header">
                 <span className="aqi-card-label">Air Quality</span>
                 <div className="aqi-cigarette">
                     <Cigarette />
-                    {/* Smoke particles - animated based on severity */}
                     <div className="aqi-smoke">
                         <span className="smoke-particle" />
                         <span className="smoke-particle" />
@@ -92,12 +84,10 @@ export function AQICard({ data, loading, error, onRetry }: AQICardProps) {
                 </div>
             </div>
 
-            {/* Main AQI value */}
             <div className="aqi-card-value">
                 <span className="aqi-number" style={{ color }}>{data.aqi}</span>
             </div>
 
-            {/* Scale bar with pointer */}
             <div className="aqi-scale-bar">
                 <div className="aqi-scale-segment good" />
                 <div className="aqi-scale-segment moderate" />
@@ -107,16 +97,13 @@ export function AQICard({ data, loading, error, onRetry }: AQICardProps) {
                 <div className="aqi-scale-pointer" style={{ left: `${scalePos}%` }} />
             </div>
 
-            {/* Category label */}
             <span className="aqi-category" style={{ color }}>{label}</span>
 
-            {/* Cigarette equivalent */}
             <div className="aqi-cigarette-text">
                 <Cigarette />
                 <span>{cigarette.text}</span>
             </div>
 
-            {/* Location */}
             <span className="aqi-location">{data.location}</span>
         </Link>
     )

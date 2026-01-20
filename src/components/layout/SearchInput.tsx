@@ -16,7 +16,6 @@ export function SearchInput() {
     const [isFocused, setIsFocused] = useState(false)
     const navigate = useNavigate()
 
-    // rotate placeholder every 3s when not focused
     useEffect(() => {
         if (isFocused) return
 
@@ -39,7 +38,6 @@ export function SearchInput() {
 
     return (
         <>
-            {/* Desktop search */}
             <form className="search-input-wrapper desktop" onSubmit={handleSubmit}>
                 <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <circle cx="11" cy="11" r="8" />
@@ -56,7 +54,6 @@ export function SearchInput() {
                 />
             </form>
 
-            {/* Mobile toggle */}
             <button className="search-toggle" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Search">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <circle cx="11" cy="11" r="8" />
@@ -64,7 +61,6 @@ export function SearchInput() {
                 </svg>
             </button>
 
-            {/* Mobile search panel */}
             {mobileOpen && (
                 <form className="search-mobile" onSubmit={handleSubmit}>
                     <input

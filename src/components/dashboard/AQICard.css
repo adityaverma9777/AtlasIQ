@@ -16,7 +16,6 @@
     border-color: var(--color-border-subtle);
 }
 
-/* Header with label and cigarette icon */
 .aqi-card-header {
     display: flex;
     align-items: center;
@@ -31,7 +30,6 @@
     letter-spacing: 0.05em;
 }
 
-/* Cigarette icon container with smoke animation */
 .aqi-cigarette {
     position: relative;
     display: flex;
@@ -45,7 +43,6 @@
     transition: color 0.3s ease;
 }
 
-/* Smoke particles container */
 .aqi-smoke {
     position: absolute;
     top: -8px;
@@ -65,7 +62,6 @@
     filter: blur(2px);
 }
 
-/* Smoke animation - intensity based on severity */
 @keyframes smoke-rise {
     0% {
         opacity: 0.4;
@@ -82,12 +78,10 @@
     }
 }
 
-/* Severity level 0 - no animation */
 .aqi-card[data-severity="0"] .smoke-particle {
     display: none;
 }
 
-/* Severity level 1 - subtle */
 .aqi-card[data-severity="1"] .smoke-particle {
     animation: smoke-rise 3s ease-out infinite;
     color: rgba(150, 150, 150, 0.3);
@@ -98,7 +92,6 @@
     --smoke-drift: -3px;
 }
 
-/* Severity level 2 */
 .aqi-card[data-severity="2"] .smoke-particle {
     animation: smoke-rise 2.5s ease-out infinite;
     color: rgba(150, 150, 150, 0.4);
@@ -115,7 +108,6 @@
     left: 55%;
 }
 
-/* Severity level 3 */
 .aqi-card[data-severity="3"] .smoke-particle {
     animation: smoke-rise 2s ease-out infinite;
     color: rgba(130, 130, 130, 0.5);
@@ -132,7 +124,6 @@
     left: 60%;
 }
 
-/* Severity level 4 - intense */
 .aqi-card[data-severity="4"] .smoke-particle {
     animation: smoke-rise 1.5s ease-out infinite;
     color: rgba(100, 100, 100, 0.6);
@@ -151,7 +142,6 @@
     left: 65%;
 }
 
-/* Severity level 5 - extreme */
 .aqi-card[data-severity="5"] .smoke-particle {
     animation: smoke-rise 1.2s ease-out infinite;
     color: rgba(80, 80, 80, 0.7);
@@ -170,7 +160,6 @@
     left: 70%;
 }
 
-/* Main value display */
 .aqi-card-value {
     display: flex;
     align-items: baseline;
@@ -184,7 +173,6 @@
     line-height: 1;
 }
 
-/* AQI Scale Bar */
 .aqi-scale-bar {
     display: flex;
     height: 6px;
@@ -219,7 +207,6 @@
     background: #7e0023;
 }
 
-/* Scale bar pointer */
 .aqi-scale-pointer {
     position: absolute;
     top: -4px;
@@ -232,7 +219,6 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* Category and cigarette equivalent */
 .aqi-category {
     font-size: var(--text-sm);
     font-weight: 500;
@@ -264,7 +250,6 @@
     font-size: var(--text-sm);
 }
 
-/* Indicator dot (kept for header) */
 .aqi-indicator {
     width: 8px;
     height: 8px;
@@ -272,7 +257,6 @@
     flex-shrink: 0;
 }
 
-/* Premium hover effects */
 a.aqi-card {
     transition:
         transform 0.2s ease,
@@ -295,7 +279,6 @@ a.aqi-card:active {
     transform: translateY(0);
 }
 
-/* Loading skeleton */
 .aqi-card-loading {
     pointer-events: none;
 }
@@ -345,7 +328,6 @@ a.aqi-card:active {
     }
 }
 
-/* Error state */
 .aqi-card-error-state {
     border-color: rgba(239, 68, 68, 0.3);
 }

@@ -119,7 +119,6 @@
     cursor: not-allowed;
 }
 
-/* mobile: full width dropdown */
 @media (max-width: 640px) {
     .location-dropdown {
         position: fixed;

@@ -8,6 +8,7 @@ export function AtlasChat() {
     const [messages, setMessages] = useState<ChatMessage[]>([])
     const [input, setInput] = useState('')
     const [loading, setLoading] = useState(false)
+    const [articleContext, setArticleContext] = useState<string | null>(null)
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const inputRef = useRef<HTMLInputElement>(null)
 
@@ -21,15 +22,44 @@ export function AtlasChat() {
         if (!isOpen) {
             setMessages([])
             setIsExpanded(false)
+            setArticleContext(null)
         }
     }, [isOpen])
 
-    // focus input when expanded
+    // focus input when expanded or opened
     useEffect(() => {
-        if (isExpanded) {
-            inputRef.current?.focus()
+        if (isExpanded || isOpen) {
+            setTimeout(() => inputRef.current?.focus(), 100)
         }
-    }, [isExpanded])
+    }, [isExpanded, isOpen])
+
+    // Listen for toggleAtlasChat event from mobile bottom nav
+    useEffect(() => {
+        const handleToggleChat = () => {
+            setIsOpen(prev => !prev)
+            setIsExpanded(true) // Open in expanded mode on mobile
+        }
+
+        window.addEventListener('toggleAtlasChat', handleToggleChat)
+        return () => window.removeEventListener('toggleAtlasChat', handleToggleChat)
+    }, [])
+
+    // Listen for openAtlasChat event from ArticleView
+    useEffect(() => {
+        const handleOpenChat = (e: CustomEvent<{ context: string; topic: string }>) => {
+            setArticleContext(e.detail.context)
+            setIsOpen(true)
+            setIsExpanded(true)
+            // Add welcome message with context
+            setMessages([{
+                role: 'assistant',
+                content: `I'm ready to help you understand more about "${e.detail.topic}". What would you like to know?`
+            }])
+        }
+
+        window.addEventListener('openAtlasChat', handleOpenChat as EventListener)
+        return () => window.removeEventListener('openAtlasChat', handleOpenChat as EventListener)
+    }, [])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -41,7 +71,12 @@ export function AtlasChat() {
         setLoading(true)
 
         try {
-            const reply = await sendChatMessage(input.trim(), messages)
+            // If we have article context, include it in the query for more relevant responses
+            const queryWithContext = articleContext
+                ? `[Context: ${articleContext}]\n\nUser question: ${input.trim()}`
+                : input.trim()
+
+            const reply = await sendChatMessage(queryWithContext, messages)
             const assistantMessage: ChatMessage = { role: 'assistant', content: reply }
             setMessages((prev) => [...prev, assistantMessage])
         } catch {
