@@ -1,17 +1,3 @@
-/**
- * AtlasIQ Home Page - Bing-style Discovery Layout
- * 
- * Features:
- * - Large hero search bar with stunning background
- * - Bottom carousel of trending stories
- * - Discovery grid: News, Weather, Sports, Markets
- * - Entertainment section (Hollywood + Bollywood)
- * - Sports section with live scores
- * - Video carousel section
- * - Lifestyle section (Travel, Food, Culture)
- * - All items link to AtlasIQ-generated articles
- */
-
 import { useEffect, useState, useRef, useCallback, type ReactNode } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAsync, useUserContext } from '../hooks'
@@ -40,16 +26,14 @@ import {
 } from 'lucide-react'
 import './Home.css'
 
-// ─────────────────────────────────────────────────────────────
-// Hero Background Images (rotating daily)
-// ─────────────────────────────────────────────────────────────
+
 
 const HERO_IMAGES = [
-    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80', // Mountains
-    'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1920&q=80', // Forest
-    'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80', // Beach
-    'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1920&q=80', // Snow mountain
-    'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=1920&q=80', // Ocean
+    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80',
+    'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1920&q=80',
+    'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80',
+    'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1920&q=80',
+    'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=1920&q=80',
 ]
 
 function getDailyHeroImage(): string {
@@ -57,9 +41,7 @@ function getDailyHeroImage(): string {
     return HERO_IMAGES[dayOfYear % HERO_IMAGES.length]
 }
 
-// ─────────────────────────────────────────────────────────────
-// URL Slug Helper
-// ─────────────────────────────────────────────────────────────
+
 
 function toUrlSlug(url: string): string {
     try {
@@ -70,9 +52,6 @@ function toUrlSlug(url: string): string {
     }
 }
 
-// ─────────────────────────────────────────────────────────────
-// Section Categories
-// ─────────────────────────────────────────────────────────────
 
 const SECTIONS = [
     { id: 'all', label: 'For You', icon: <Flame size={16} /> },
@@ -83,9 +62,6 @@ const SECTIONS = [
     { id: 'lifestyle', label: 'Lifestyle', icon: <Compass size={16} /> },
 ]
 
-// ─────────────────────────────────────────────────────────────
-// Home Page Component
-// ─────────────────────────────────────────────────────────────
 
 export function Home() {
     const navigate = useNavigate()
@@ -102,7 +78,7 @@ export function Home() {
         }
     }, [searchQuery, navigate])
 
-    // Fetch data - Core
+    // Fetch data 
     const headlines = useAsync(
         () => fetchHeadlines({ country: 'GLOBAL' }, { pageSize: 12 }),
         []
@@ -117,13 +93,13 @@ export function Home() {
         [location.lat, location.lon]
     )
 
-    // Fetch data - Entertainment, Sports, Videos, Lifestyle
+    // Fetch data 
     const entertainment = useAsync(() => fetchEntertainmentFeed({ count: 8 }), [])
     const sports = useAsync(() => fetchSportsFeed({ count: 8 }), [])
     const videos = useAsync(() => fetchTrendingVideos({ count: 8 }), [])
     const lifestyle = useAsync(() => fetchLifestyleFeed({ count: 8 }), [])
 
-    // Live scores with auto-refresh
+    // Live scores with auto
     const liveScores = useLiveScoreRefresh(() => fetchLiveCricketMatches(), 60000)
 
     return (
@@ -281,9 +257,6 @@ export function Home() {
     )
 }
 
-// ─────────────────────────────────────────────────────────────
-// Bottom Carousel Component
-// ─────────────────────────────────────────────────────────────
 
 interface BottomCarouselProps {
     items: Headline[]
@@ -386,9 +359,6 @@ function CarouselCard({ headline }: { headline: Headline }) {
     )
 }
 
-// ─────────────────────────────────────────────────────────────
-// Featured News Grid
-// ─────────────────────────────────────────────────────────────
 
 interface FeaturedNewsProps {
     items: Headline[]
@@ -452,59 +422,9 @@ function FeaturedNews({ items, loading }: FeaturedNewsProps) {
     )
 }
 
-// ─────────────────────────────────────────────────────────────
-// Story Card
-// ─────────────────────────────────────────────────────────────
 
-interface StoryCardProps {
-    headline: Headline
-    compact?: boolean
-    onClick?: () => void
-}
 
-function StoryCard({ headline, compact = false, onClick }: StoryCardProps) {
-    const slug = toUrlSlug(headline.url)
 
-    const handleClick = () => {
-        cacheNewsArticle({
-            slug,
-            url: headline.url,
-            title: headline.title,
-            description: headline.summary,
-            sourceName: headline.tag,
-            author: headline.author,
-            publishedAt: headline.publishedAt,
-            imageUrl: headline.imageUrl,
-            content: headline.content,
-            cachedAt: Date.now(),
-            ttlHours: 6,
-        })
-        onClick?.()
-    }
-
-    return (
-        <Link
-            to={`/entity/news-article/${slug}`}
-            className={`story-card ${compact ? 'story-card--compact' : ''}`}
-            onClick={handleClick}
-        >
-            {headline.imageUrl && (
-                <div className="story-card-image">
-                    <img src={headline.imageUrl} alt="" loading="lazy" />
-                </div>
-            )}
-            <div className="story-card-content">
-                <span className="story-card-source">{headline.tag}</span>
-                <h3 className="story-card-title">{headline.title}</h3>
-                {!compact && <p className="story-card-summary">{headline.summary}</p>}
-            </div>
-        </Link>
-    )
-}
-
-// ─────────────────────────────────────────────────────────────
-// Entertainment Section
-// ─────────────────────────────────────────────────────────────
 
 interface EntertainmentSectionProps {
     items: EntertainmentItem[]
@@ -557,9 +477,6 @@ function EntertainmentSection({ items, loading }: EntertainmentSectionProps) {
     )
 }
 
-// ─────────────────────────────────────────────────────────────
-// Sports Section
-// ─────────────────────────────────────────────────────────────
 
 interface SportsSectionProps {
     items: SportsItem[]
@@ -612,9 +529,6 @@ function SportsSection({ items, loading }: SportsSectionProps) {
     )
 }
 
-// ─────────────────────────────────────────────────────────────
-// Videos Section
-// ─────────────────────────────────────────────────────────────
 
 interface VideosSectionProps {
     videos: YouTubeVideo[]
@@ -635,9 +549,6 @@ function VideosSection({ videos, loading }: VideosSectionProps) {
     )
 }
 
-// ─────────────────────────────────────────────────────────────
-// Lifestyle Section
-// ─────────────────────────────────────────────────────────────
 
 interface LifestyleSectionProps {
     items: LifestyleItem[]
@@ -697,9 +608,6 @@ function LifestyleSection({ items, loading }: LifestyleSectionProps) {
     )
 }
 
-// ─────────────────────────────────────────────────────────────
-// Weather Widget
-// ─────────────────────────────────────────────────────────────
 
 interface WeatherWidgetProps {
     data: { temperature: number; condition: string; weatherCode: number } | null | undefined
@@ -747,10 +655,6 @@ function WeatherWidget({ data, aqi, loading, location }: WeatherWidgetProps) {
         </Link>
     )
 }
-
-// ─────────────────────────────────────────────────────────────
-// Markets Widget
-// ─────────────────────────────────────────────────────────────
 
 interface MarketsWidgetProps {
     data: MarketData[]
