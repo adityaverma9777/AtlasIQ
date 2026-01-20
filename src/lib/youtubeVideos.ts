@@ -4,7 +4,7 @@
  * Note: Uses RSS feeds to avoid API quota limits
  */
 
-import { fetchTextWithCache } from './fetch'
+import { fetchRssWithProxy } from './rssProxy'
 
 // ─────────────────────────────────────────────────────────────
 // Types
@@ -61,26 +61,6 @@ function parseYouTubeRss(xmlText: string): YouTubeVideo[] {
     }
 }
 
-async function fetchRssWithProxy(rssUrl: string, bypassCache = false): Promise<string> {
-    const proxies = [
-        `https://corsproxy.io/?${encodeURIComponent(rssUrl)}`,
-        `https://api.allorigins.win/raw?url=${encodeURIComponent(rssUrl)}`,
-    ]
-
-    for (const proxyUrl of proxies) {
-        try {
-            const text = await fetchTextWithCache(proxyUrl, { cacheMinutes: 30, bypassCache })
-            if (text && text.includes('<entry>')) {
-                return text
-            }
-        } catch {
-            continue
-        }
-    }
-
-    throw new Error('Failed to fetch YouTube RSS')
-}
-
 // ─────────────────────────────────────────────────────────────
 // Curated Channels (Educational & High-Value)
 // ─────────────────────────────────────────────────────────────
@@ -109,7 +89,7 @@ export async function fetchChannelVideos(channelId: string, opts: {
     const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`
 
     try {
-        const xmlText = await fetchRssWithProxy(rssUrl, bypassCache)
+        const xmlText = await fetchRssWithProxy(rssUrl, { cacheMinutes: 30, bypassCache })
         return parseYouTubeRss(xmlText).slice(0, count)
     } catch (error) {
         console.error(`Failed to fetch channel ${channelId}:`, error)

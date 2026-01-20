@@ -3,7 +3,7 @@
  * Fetches travel, food, culture, and lifestyle articles
  */
 
-import { fetchTextWithCache } from './fetch'
+import { fetchRssWithProxy, parseRssItems, stripHtml } from './rssProxy'
 import type { Headline } from './news'
 
 // ─────────────────────────────────────────────────────────────
@@ -13,67 +13,6 @@ import type { Headline } from './news'
 export interface LifestyleItem extends Headline {
     category: 'travel' | 'food' | 'culture' | 'lifestyle'
     readTime?: string
-}
-
-// ─────────────────────────────────────────────────────────────
-// RSS Parser
-// ─────────────────────────────────────────────────────────────
-
-function parseRssItems(xmlText: string): Array<{
-    title: string
-    link: string
-    pubDate?: string
-    sourceName?: string
-    description?: string
-    imageUrl?: string
-}> {
-    try {
-        const doc = new DOMParser().parseFromString(xmlText, 'text/xml')
-        const items = Array.from(doc.querySelectorAll('item'))
-        return items.map((item) => {
-            const title = item.querySelector('title')?.textContent?.trim() || ''
-            const link = item.querySelector('link')?.textContent?.trim() || ''
-            const pubDate = item.querySelector('pubDate')?.textContent?.trim() || undefined
-            const description = item.querySelector('description')?.textContent?.trim() || undefined
-
-            const sourceEl = item.querySelector('source')
-            const sourceName = sourceEl?.textContent?.trim() || undefined
-
-            let imageUrl: string | undefined
-            const media = item.querySelector('media\\:thumbnail, media\\:content, enclosure') as Element | null
-            if (media) {
-                imageUrl = media.getAttribute('url') || undefined
-            }
-
-            return { title, link, pubDate, sourceName, description, imageUrl }
-        })
-    } catch {
-        return []
-    }
-}
-
-function stripHtml(text: string): string {
-    return text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
-}
-
-async function fetchRssWithProxy(rssUrl: string, bypassCache = false): Promise<string> {
-    const proxies = [
-        `https://corsproxy.io/?${encodeURIComponent(rssUrl)}`,
-        `https://api.allorigins.win/raw?url=${encodeURIComponent(rssUrl)}`,
-    ]
-
-    for (const proxyUrl of proxies) {
-        try {
-            const text = await fetchTextWithCache(proxyUrl, { cacheMinutes: 30, bypassCache })
-            if (text && text.includes('<item>')) {
-                return text
-            }
-        } catch {
-            continue
-        }
-    }
-
-    throw new Error('Failed to fetch RSS feed')
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -89,7 +28,7 @@ export async function fetchTravelArticles(opts: {
     const rssUrl = 'https://news.google.com/rss/search?q=travel+destination+vacation+tourism&hl=en-US&gl=US&ceid=US:en'
 
     try {
-        const xmlText = await fetchRssWithProxy(rssUrl, bypassCache)
+        const xmlText = await fetchRssWithProxy(rssUrl, { cacheMinutes: 30, bypassCache })
         const items = parseRssItems(xmlText).filter(i => i.title && i.link)
 
         return items.slice(0, count).map(i => {
@@ -126,7 +65,7 @@ export async function fetchFoodArticles(opts: {
     const rssUrl = 'https://news.google.com/rss/search?q=food+recipes+restaurants+cuisine&hl=en-US&gl=US&ceid=US:en'
 
     try {
-        const xmlText = await fetchRssWithProxy(rssUrl, bypassCache)
+        const xmlText = await fetchRssWithProxy(rssUrl, { cacheMinutes: 30, bypassCache })
         const items = parseRssItems(xmlText).filter(i => i.title && i.link)
 
         return items.slice(0, count).map(i => {
@@ -163,7 +102,7 @@ export async function fetchCultureArticles(opts: {
     const rssUrl = 'https://news.google.com/rss/search?q=art+culture+museum+exhibition&hl=en-US&gl=US&ceid=US:en'
 
     try {
-        const xmlText = await fetchRssWithProxy(rssUrl, bypassCache)
+        const xmlText = await fetchRssWithProxy(rssUrl, { cacheMinutes: 30, bypassCache })
         const items = parseRssItems(xmlText).filter(i => i.title && i.link)
 
         return items.slice(0, count).map(i => {

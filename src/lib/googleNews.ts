@@ -1,26 +1,22 @@
-import { fetchTextWithCache } from './fetch'
+import { fetchRssWithProxy, stripHtml } from './rssProxy'
 import type { Headline } from './news'
 
-function stripHtml(text: string): string {
-    return text
-        .replace(/<[^>]+>/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim()
-}
+export async function fetchGoogleNewsIndiaHeadlines(opts: {
+    page: number
+    pageSize: number
+    bypassCache?: boolean
+}): Promise<Headline[]> {
+    const { page, pageSize, bypassCache = false } = opts
 
-function parseRssItems(xmlText: string): Array<{
-    title: string
-    link: string
-    pubDate?: string
-    sourceName?: string
-    sourceUrl?: string
-    description?: string
-    imageUrl?: string
-}> {
+    // India edition (English)
+    const rssUrl = 'https://news.google.com/rss?hl=en-IN&gl=IN&ceid=IN:en'
+
     try {
+        const xmlText = await fetchRssWithProxy(rssUrl, { cacheMinutes: 5, bypassCache })
+
+        // Use shared parser but need to get sourceUrl from source element
         const doc = new DOMParser().parseFromString(xmlText, 'text/xml')
-        const items = Array.from(doc.querySelectorAll('item'))
-        return items.map((item) => {
+        const items = Array.from(doc.querySelectorAll('item')).map((item) => {
             const title = item.querySelector('title')?.textContent?.trim() || ''
             const link = item.querySelector('link')?.textContent?.trim() || ''
             const pubDate = item.querySelector('pubDate')?.textContent?.trim() || undefined
@@ -37,55 +33,7 @@ function parseRssItems(xmlText: string): Array<{
             }
 
             return { title, link, pubDate, sourceName, sourceUrl, description, imageUrl }
-        })
-    } catch {
-        return []
-    }
-}
-
-async function fetchRssWithProxy(rssUrl: string, bypassCache: boolean): Promise<string> {
-    const proxies = [
-        `https://corsproxy.io/?${encodeURIComponent(rssUrl)}`,
-        `https://api.allorigins.win/raw?url=${encodeURIComponent(rssUrl)}`,
-        `https://thingproxy.freeboard.io/fetch/${rssUrl}`,
-    ]
-
-    for (const proxyUrl of proxies) {
-        try {
-            const text = await fetchTextWithCache(proxyUrl, { cacheMinutes: 5, bypassCache })
-            if (text && text.includes('<item>')) {
-                return text
-            }
-        } catch {
-            continue
-        }
-    }
-
-    try {
-        const response = await fetch(rssUrl)
-        if (response.ok) {
-            return await response.text()
-        }
-    } catch {
-        // fall through
-    }
-
-    throw new Error('Failed to fetch Google News RSS feed')
-}
-
-export async function fetchGoogleNewsIndiaHeadlines(opts: {
-    page: number
-    pageSize: number
-    bypassCache?: boolean
-}): Promise<Headline[]> {
-    const { page, pageSize, bypassCache = false } = opts
-
-    // India edition (English)
-    const rssUrl = 'https://news.google.com/rss?hl=en-IN&gl=IN&ceid=IN:en'
-
-    try {
-        const xmlText = await fetchRssWithProxy(rssUrl, bypassCache)
-        const items = parseRssItems(xmlText).filter((i) => i.title && (i.sourceUrl || i.link))
+        }).filter((i) => i.title && (i.sourceUrl || i.link))
 
         if (items.length === 0) {
             throw new Error('No articles found in RSS feed')
@@ -113,5 +61,3 @@ export async function fetchGoogleNewsIndiaHeadlines(opts: {
         throw new Error(`Failed to load India headlines: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
 }
-
-

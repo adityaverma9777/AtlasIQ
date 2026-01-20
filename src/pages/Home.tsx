@@ -104,7 +104,7 @@ export function Home() {
 
     return (
         <div className="home-page">
-            {/* Hero Section */}
+
             <section className="home-hero" style={{ backgroundImage: `url(${heroImage})` }}>
                 <div className="home-hero-overlay" />
                 <div className="home-hero-content">
@@ -125,14 +125,14 @@ export function Home() {
                     </p>
                 </div>
 
-                {/* Bottom Carousel */}
+
                 <BottomCarousel
                     items={headlines.data || []}
                     loading={headlines.loading}
                 />
             </section>
 
-            {/* Section Navigation */}
+
             <section className="home-sections">
                 <div className="container">
                     <CategoryPills
@@ -432,7 +432,7 @@ interface EntertainmentSectionProps {
 }
 
 function EntertainmentSection({ items, loading }: EntertainmentSectionProps) {
-    // Bing-style varied card sizes pattern
+
     const getSizeForIndex = (i: number): 'featured' | 'large' | 'medium' | 'small' => {
         if (i === 0) return 'featured'
         if (i === 1 || i === 2) return 'medium'
@@ -484,7 +484,7 @@ interface SportsSectionProps {
 }
 
 function SportsSection({ items, loading }: SportsSectionProps) {
-    // Bing-style varied card sizes pattern
+
     const getSizeForIndex = (i: number): 'featured' | 'large' | 'medium' | 'small' => {
         if (i === 0) return 'featured'
         if (i === 1 || i === 2) return 'medium'
@@ -565,7 +565,7 @@ function LifestyleSection({ items, loading }: LifestyleSectionProps) {
         }
     }
 
-    // Bing-style varied card sizes pattern
+
     const getSizeForIndex = (i: number): 'featured' | 'large' | 'medium' | 'small' => {
         if (i === 0) return 'featured'
         if (i === 1 || i === 2) return 'medium'
