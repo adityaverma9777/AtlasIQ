@@ -1,5 +1,5 @@
-// translation via MyMemory API (primary) and Lingva (fallback)
-// Both are free, no authentication required
+// Translation service using our Vercel serverless proxy
+// Falls back to MyMemory API in local development
 
 export interface Language {
     code: string
@@ -18,6 +18,13 @@ export const LANGUAGES: Language[] = [
     { code: 'ja', name: 'Japanese' },
     { code: 'zh', name: 'Chinese' },
     { code: 'ar', name: 'Arabic' },
+    { code: 'ko', name: 'Korean' },
+    { code: 'bn', name: 'Bengali' },
+    { code: 'ta', name: 'Tamil' },
+    { code: 'te', name: 'Telugu' },
+    { code: 'mr', name: 'Marathi' },
+    { code: 'gu', name: 'Gujarati' },
+    { code: 'pa', name: 'Punjabi' },
 ]
 
 export interface TranslateResult {
@@ -35,10 +42,80 @@ function getCacheKey(text: string, source: string, target: string): string {
     return `${source}:${target}:${text.slice(0, 100)}`
 }
 
+function getBaseUrl(): string {
+    if (typeof window !== 'undefined') {
+        return window.location.origin
+    }
+    return ''
+}
+
 /**
- * Primary: MyMemory API - Free, no auth required
- * Supports 5000 chars/day without auth, much more with email
- * https://mymemory.translated.net/doc/spec.php
+ * Primary: Our Vercel serverless proxy (uses Google Translate)
+ */
+async function tryServerlessProxy(
+    text: string,
+    targetLang: string,
+    sourceLang: string
+): Promise<TranslateResult | null> {
+    const baseUrl = getBaseUrl()
+    if (!baseUrl) return null
+
+    try {
+        const url = `${baseUrl}/api/translate?text=${encodeURIComponent(text)}&source=${sourceLang}&target=${targetLang}`
+        const response = await fetch(url)
+
+        if (!response.ok) return null
+
+        const data = await response.json()
+        if (data.success && data.translatedText) {
+            return {
+                success: true,
+                text: data.translatedText,
+                detectedLanguage: data.detectedLanguage,
+            }
+        }
+        return null
+    } catch {
+        return null
+    }
+}
+
+/**
+ * Fallback: Direct Google Translate API (may not work in all browsers due to CORS)
+ */
+async function tryGoogleDirect(
+    text: string,
+    targetLang: string,
+    sourceLang: string
+): Promise<TranslateResult | null> {
+    try {
+        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`
+
+        const response = await fetch(url)
+        if (!response.ok) return null
+
+        const data = await response.json()
+
+        let translatedText = ''
+        if (Array.isArray(data) && Array.isArray(data[0])) {
+            translatedText = data[0].map((item: string[]) => item[0]).join('')
+        }
+
+        if (translatedText) {
+            return {
+                success: true,
+                text: translatedText,
+                detectedLanguage: data[2] || undefined,
+            }
+        }
+        return null
+    } catch {
+        return null
+    }
+}
+
+/**
+ * Last resort: MyMemory API
  */
 async function tryMyMemory(
     text: string,
@@ -46,21 +123,19 @@ async function tryMyMemory(
     sourceLang: string
 ): Promise<TranslateResult | null> {
     const langPair = sourceLang === 'auto'
-        ? `en|${targetLang}` // Default to en for auto-detect
+        ? `en|${targetLang}`
         : `${sourceLang}|${targetLang}`
 
-    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${encodeURIComponent(langPair)}`
-
     try {
+        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${encodeURIComponent(langPair)}`
         const response = await fetch(url)
         if (!response.ok) return null
 
         const data = await response.json()
         if (data.responseStatus === 200 && data.responseData?.translatedText) {
-            // MyMemory returns "MYMEMORY WARNING: ..." for quota issues
             const translated = data.responseData.translatedText
             if (translated.startsWith('MYMEMORY WARNING')) {
-                return null // Try fallback
+                return null
             }
             return {
                 success: true,
@@ -74,46 +149,6 @@ async function tryMyMemory(
     }
 }
 
-/**
- * Fallback: Lingva Translate - Free Google Translate frontend
- * Public instances available at various domains
- */
-async function tryLingva(
-    text: string,
-    targetLang: string,
-    sourceLang: string
-): Promise<TranslateResult | null> {
-    const source = sourceLang === 'auto' ? 'auto' : sourceLang
-
-    // Try multiple Lingva instances
-    const instances = [
-        'https://lingva.ml',
-        'https://translate.plausibility.cloud',
-        'https://lingva.garudalinux.org',
-    ]
-
-    for (const instance of instances) {
-        try {
-            const url = `${instance}/api/v1/${source}/${targetLang}/${encodeURIComponent(text)}`
-            const response = await fetch(url)
-
-            if (!response.ok) continue
-
-            const data = await response.json()
-            if (data.translation) {
-                return {
-                    success: true,
-                    text: data.translation,
-                    detectedLanguage: data.info?.detectedSource,
-                }
-            }
-        } catch {
-            continue
-        }
-    }
-    return null
-}
-
 export async function translate(
     text: string,
     targetLang: string,
@@ -124,8 +159,8 @@ export async function translate(
         return { success: false, error: 'Please enter text to translate' }
     }
 
-    // check cache for short texts
-    if (trimmed.length < 200) {
+    // Check cache
+    if (trimmed.length < 500) {
         const key = getCacheKey(trimmed, sourceLang, targetLang)
         const cached = translateCache.get(key)
         if (cached && cached.expires > Date.now()) {
@@ -133,33 +168,38 @@ export async function translate(
         }
     }
 
-    // Try MyMemory first (primary)
+    // Try our serverless proxy first (most reliable)
+    const serverlessResult = await tryServerlessProxy(trimmed, targetLang, sourceLang)
+    if (serverlessResult?.success) {
+        cacheResult(trimmed, sourceLang, targetLang, serverlessResult.text!)
+        return serverlessResult
+    }
+
+    // Try direct Google API (may work in some cases)
+    const googleResult = await tryGoogleDirect(trimmed, targetLang, sourceLang)
+    if (googleResult?.success) {
+        cacheResult(trimmed, sourceLang, targetLang, googleResult.text!)
+        return googleResult
+    }
+
+    // Fall back to MyMemory
     const myMemoryResult = await tryMyMemory(trimmed, targetLang, sourceLang)
     if (myMemoryResult?.success) {
-        if (trimmed.length < 200) {
-            const key = getCacheKey(trimmed, sourceLang, targetLang)
-            translateCache.set(key, {
-                text: myMemoryResult.text!,
-                expires: Date.now() + CACHE_MS,
-            })
-        }
+        cacheResult(trimmed, sourceLang, targetLang, myMemoryResult.text!)
         return myMemoryResult
     }
 
-    // Try Lingva as fallback
-    const lingvaResult = await tryLingva(trimmed, targetLang, sourceLang)
-    if (lingvaResult?.success) {
-        if (trimmed.length < 200) {
-            const key = getCacheKey(trimmed, sourceLang, targetLang)
-            translateCache.set(key, {
-                text: lingvaResult.text!,
-                expires: Date.now() + CACHE_MS,
-            })
-        }
-        return lingvaResult
-    }
-
     return { success: false, error: 'Translation service unavailable. Please try again later.' }
+}
+
+function cacheResult(text: string, source: string, target: string, result: string) {
+    if (text.length < 500) {
+        const key = getCacheKey(text, source, target)
+        translateCache.set(key, {
+            text: result,
+            expires: Date.now() + CACHE_MS,
+        })
+    }
 }
 
 export function getLanguageName(code: string): string {
