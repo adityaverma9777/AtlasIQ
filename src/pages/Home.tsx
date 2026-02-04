@@ -692,3 +692,4 @@ function MarketsWidget({ data, loading }: MarketsWidgetProps) {
 }
 
 export default Home
+
