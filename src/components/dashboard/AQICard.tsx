@@ -108,3 +108,4 @@ export function AQICard({ data, loading, error, onRetry }: AQICardProps) {
         </Link>
     )
 }
+

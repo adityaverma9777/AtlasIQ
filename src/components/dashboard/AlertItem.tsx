@@ -62,3 +62,4 @@ export function AlertItem({ type, title, summary, severity }: AlertItemProps) {
         </div>
     )
 }
+

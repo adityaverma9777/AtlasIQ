@@ -30,3 +30,4 @@ export function MarketRow({ name, price, change, trend, href }: MarketRowProps) 
 
     return <div className="market-row">{content}</div>
 }
+

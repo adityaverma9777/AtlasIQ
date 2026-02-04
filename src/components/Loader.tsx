@@ -42,3 +42,4 @@ export function InlineLoader({ text }: { text?: string }) {
         </span>
     )
 }
+

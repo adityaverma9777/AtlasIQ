@@ -98,3 +98,4 @@ export function InfoCard({ label, value, children, href, icon, loading, error, o
 
     return <article className="info-card">{content}</article>
 }
+

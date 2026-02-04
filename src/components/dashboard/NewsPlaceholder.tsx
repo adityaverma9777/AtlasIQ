@@ -18,3 +18,4 @@ export function NewsPlaceholder({ className = '' }: { className?: string }) {
         </div>
     )
 }
+

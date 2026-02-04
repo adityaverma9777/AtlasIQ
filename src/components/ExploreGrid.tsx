@@ -179,3 +179,4 @@ export function CategoryPills({ categories, activeId, onChange }: CategoryPillsP
         </div>
     )
 }
+
