@@ -419,3 +419,4 @@ export function canRefresh(countryCode: string): boolean {
     const age = getCacheAge(countryCode)
     return age === null || age > 60 * 1000
 }
+

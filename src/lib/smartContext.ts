@@ -93,3 +93,4 @@ export async function getSmartContext(query: string): Promise<SmartContextResult
         return null
     }
 }
+

@@ -140,3 +140,4 @@ export function convertTime(date: Date, toTimezone: string): string {
 export function getCurrentTimeIn(timezone: string): string {
     return convertTime(new Date(), timezone)
 }
+

@@ -191,3 +191,4 @@ export async function getHotTopicsForArticles(opts: {
 
     return goodTopics.slice(0, count).map(t => t.topic)
 }
+

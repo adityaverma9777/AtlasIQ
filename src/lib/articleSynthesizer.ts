@@ -484,3 +484,4 @@ export async function resolveArticleTopic(query: string): Promise<string> {
         return query
     }
 }
+

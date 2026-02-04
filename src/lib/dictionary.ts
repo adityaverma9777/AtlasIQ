@@ -102,3 +102,4 @@ export async function lookupWord(word: string): Promise<DictionaryResult> {
         return { found: false, error: 'Failed to fetch definition' }
     }
 }
+

@@ -136,3 +136,4 @@ export async function fetchAQI(opts: AQIOptions): Promise<AQIData> {
         location: name,
     }
 }
+

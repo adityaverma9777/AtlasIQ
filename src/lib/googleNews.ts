@@ -61,3 +61,4 @@ export async function fetchGoogleNewsIndiaHeadlines(opts: {
         throw new Error(`Failed to load India headlines: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
 }
+

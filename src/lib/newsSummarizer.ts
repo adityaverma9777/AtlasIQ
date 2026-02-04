@@ -85,3 +85,4 @@ export function hasEnoughContent(news: NewsContent): boolean {
                   (news.content?.length || 0)
     return total > 100
 }
+

@@ -622,3 +622,4 @@ export function getCachedEntity(type: EntityType, slug: string): EntityData | nu
     const cached = entityCache.get(key)
     return cached?.data || null
 }
+

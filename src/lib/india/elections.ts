@@ -127,3 +127,4 @@ export async function getElectionsData(opts: IndiaFetchOptions = {}) {
     }
 }
 
+

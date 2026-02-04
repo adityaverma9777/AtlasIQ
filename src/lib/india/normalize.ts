@@ -153,3 +153,4 @@ export const ENTITY_TYPE_LABELS: Record<string, string> = {
     'treaty': 'Treaty',
     'statement': 'Statement',
 }
+

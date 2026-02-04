@@ -40,3 +40,4 @@ export interface SearchResults {
     india: never[]
     learn: never[]
 }
+

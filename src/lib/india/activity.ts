@@ -234,3 +234,4 @@ export const ACTIVITY_TYPE_LABELS: Record<ActivityType, string> = {
     'international': 'Diplomatic',
     'general': 'Update',
 }
+

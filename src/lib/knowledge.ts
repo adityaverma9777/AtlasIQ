@@ -102,3 +102,4 @@ export async function canGenerateArticle(topic: string): Promise<boolean> {
 }
 
 export { topicToSlug, type KnowledgeEntity, type KnowledgeType }
+

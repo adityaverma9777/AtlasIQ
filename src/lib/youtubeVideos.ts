@@ -142,3 +142,4 @@ export async function searchYouTubeVideos(query: string, opts: {
     void query // Placeholder for future API integration
     return fetchTrendingVideos({ count, bypassCache })
 }
+

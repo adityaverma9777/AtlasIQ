@@ -57,3 +57,4 @@ export async function fetchCryptoMarkets(bypassCache = false): Promise<MarketDat
         }
     }).filter(Boolean) as MarketData[]
 }
+

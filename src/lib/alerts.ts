@@ -380,3 +380,4 @@ export function getAlertIcon(type: AlertType): string {
     }
     return icons[type]
 }
+

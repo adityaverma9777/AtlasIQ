@@ -104,3 +104,4 @@ export function getLastRun(taskName: string): Date | null {
 
 // 24 hours in ms
 export const INTERVAL_24H = 24 * 60 * 60 * 1000
+

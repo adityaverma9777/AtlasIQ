@@ -33,3 +33,4 @@ export function registerScheduledTasks(): void {
     registerTask('knowledge-refresh', INTERVAL_24H, refreshKnowledgeEntities)
     registerTask('cache-cleanup', INTERVAL_24H, cleanupCache)
 }
+

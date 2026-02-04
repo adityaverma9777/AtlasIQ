@@ -205,3 +205,4 @@ function cacheResult(text: string, source: string, target: string, result: strin
 export function getLanguageName(code: string): string {
     return LANGUAGES.find(l => l.code === code)?.name || code
 }
+

@@ -1,10 +1,8 @@
-// Atlas Chat service - knowledge-aware chat with Groq
-
 import { getSmartContext } from './smartContext'
 
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions'
 
-// strict Atlas identity
+
 const ATLAS_SYSTEM_PROMPT = `You are Atlas, the intelligence assistant of AtlasIQ.
 
 IDENTITY:
@@ -43,20 +41,19 @@ interface GroqResponse {
     }>
 }
 
-// detect query intent with AI
+
 type QueryIntent = 'SEARCH' | 'GENERAL'
 
 async function classifyIntent(query: string): Promise<QueryIntent> {
     const q = query.toLowerCase()
 
-    // 1. Fast heuristic check for obvious time/news keywords
+
     const timeKeywords = ['today', 'yesterday', 'tomorrow', 'current', 'latest', 'news', 'price', 'now', 'update', 'recent']
     if (timeKeywords.some(w => q.includes(w))) {
         return 'SEARCH'
     }
 
-    // 2. AI Classifier for ambiguity
-    // We use a small, fast prompt to decide
+
     const apiKey = import.meta.env.VITE_GROQ_API_KEY
     if (!apiKey) return 'GENERAL'
 
@@ -68,7 +65,7 @@ async function classifyIntent(query: string): Promise<QueryIntent> {
                 Authorization: `Bearer ${apiKey}`,
             },
             body: JSON.stringify({
-                model: 'llama-3.3-70b-versatile', // using versatile for speed/quality balance
+                model: 'llama-3.3-70b-versatile', // using versatile for speed
                 messages: [
                     {
                         role: 'system',
@@ -101,7 +98,7 @@ async function classifyIntent(query: string): Promise<QueryIntent> {
     }
 }
 
-// send message to Atlas
+
 export async function sendChatMessage(
     query: string,
     history: ChatMessage[]
@@ -112,12 +109,12 @@ export async function sendChatMessage(
         return 'Atlas is currently unavailable. Please check the API configuration.'
     }
 
-    // 1. Determine Intent (Smart Search)
+
     const intent = await classifyIntent(query)
 
     let context: string | null = null
 
-    // 2. Fetch context if SEARCH needed
+
     if (intent === 'SEARCH') {
         const smartResult = await getSmartContext(query)
         if (smartResult) {
@@ -125,12 +122,12 @@ export async function sendChatMessage(
         }
     }
 
-    // build messages
+
     const messages: Array<{ role: string; content: string }> = [
         { role: 'system', content: ATLAS_SYSTEM_PROMPT },
     ]
 
-    // add context if available
+
     if (context) {
         messages.push({
             role: 'system',
@@ -140,13 +137,12 @@ export async function sendChatMessage(
         })
     }
 
-    // add conversation history (last 4 exchanges)
+
     const recentHistory = history.slice(-8)
     for (const msg of recentHistory) {
         messages.push({ role: msg.role, content: msg.content })
     }
 
-    // add current query
     messages.push({ role: 'user', content: query })
 
     try {
@@ -176,3 +172,4 @@ export async function sendChatMessage(
         return 'Atlas encountered an error. Please try again.'
     }
 }
+
