@@ -1,7 +1,6 @@
 // Atlas Chat service - knowledge-aware chat with Groq
 
-import { getKnowledgeArticle } from './knowledge'
-import { search } from './search'
+import { getSmartContext } from './smartContext'
 
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions'
 
@@ -19,6 +18,7 @@ RESPONSE RULES:
 - Cite context when provided
 - Use structured responses (short paragraphs or bullets)
 - No emojis, slang, or filler
+- If context is provided, USE IT as the ground truth.
 
 SAFETY:
 - Avoid speculation
@@ -43,62 +43,61 @@ interface GroqResponse {
     }>
 }
 
-// detect query intent
-type QueryIntent = 'knowledge' | 'exam' | 'weather' | 'aqi' | 'market' | 'government' | 'general'
+// detect query intent with AI
+type QueryIntent = 'SEARCH' | 'GENERAL'
 
-function detectIntent(query: string): QueryIntent {
+async function classifyIntent(query: string): Promise<QueryIntent> {
     const q = query.toLowerCase()
 
-    if (q.includes('exam') || q.includes('upsc') || q.includes('jee') || q.includes('neet')) {
-        return 'exam'
+    // 1. Fast heuristic check for obvious time/news keywords
+    const timeKeywords = ['today', 'yesterday', 'tomorrow', 'current', 'latest', 'news', 'price', 'now', 'update', 'recent']
+    if (timeKeywords.some(w => q.includes(w))) {
+        return 'SEARCH'
     }
-    if (q.includes('weather') || q.includes('temperature') || q.includes('forecast')) {
-        return 'weather'
-    }
-    if (q.includes('aqi') || q.includes('air quality') || q.includes('pollution')) {
-        return 'aqi'
-    }
-    if (q.includes('market') || q.includes('bitcoin') || q.includes('crypto') || q.includes('stock')) {
-        return 'market'
-    }
-    if (q.includes('government') || q.includes('policy') || q.includes('election') || q.includes('diplomacy')) {
-        return 'government'
-    }
-    if (q.includes('what is') || q.includes('explain') || q.includes('tell me about') || q.includes('who is')) {
-        return 'knowledge'
-    }
-    return 'general'
-}
 
-// get relevant context from AtlasIQ
-async function getContext(query: string, intent: QueryIntent): Promise<string | null> {
+    // 2. AI Classifier for ambiguity
+    // We use a small, fast prompt to decide
+    const apiKey = import.meta.env.VITE_GROQ_API_KEY
+    if (!apiKey) return 'GENERAL'
+
     try {
-        if (intent === 'knowledge') {
-            // extract topic from query
-            const topic = query
-                .replace(/^(what is|explain|tell me about|who is|who was)\s*/i, '')
-                .replace(/\?$/, '')
-                .trim()
+        const response = await fetch(GROQ_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${apiKey}`,
+            },
+            body: JSON.stringify({
+                model: 'llama-3.3-70b-versatile', // using versatile for speed/quality balance
+                messages: [
+                    {
+                        role: 'system',
+                        content: `Classify if the user query requires external real-time data, news, specific facts, or recent events. 
+                        Respond ONLY with "SEARCH" or "GENERAL".
+                        
+                        Examples:
+                        "What is the price of Bitcoin?" -> SEARCH
+                        "Who won the match yesterday?" -> SEARCH
+                        "Write a python script" -> GENERAL
+                        "Explain quantum physics" -> SEARCH (FACTUAL)
+                        "Hello how are you" -> GENERAL
+                        "Tell me a joke" -> GENERAL`
+                    },
+                    { role: 'user', content: query }
+                ],
+                temperature: 0.1,
+                max_tokens: 10,
+            }),
+        })
 
-            if (topic.length > 2) {
-                const article = await getKnowledgeArticle(topic)
-                if (article) {
-                    const sections = article.sections.slice(0, 2).map(s => s.content).join(' ')
-                    return `[AtlasIQ Knowledge: ${article.title}]\n${article.overview}\n${sections.slice(0, 800)}`
-                }
-            }
-        }
+        if (!response.ok) return 'GENERAL'
 
-        // search for any matching entities
-        const results = await search(query)
-        if (results?.article) {
-            const sections = results.article.sections.slice(0, 2).map(s => s.content).join(' ')
-            return `[AtlasIQ Knowledge: ${results.article.title}]\n${results.article.overview}\n${sections.slice(0, 800)}`
-        }
+        const data: GroqResponse = await response.json()
+        const verdict = data.choices[0]?.message?.content?.trim().toUpperCase()
 
-        return null
+        return verdict === 'SEARCH' ? 'SEARCH' : 'GENERAL'
     } catch {
-        return null
+        return 'GENERAL'
     }
 }
 
@@ -113,8 +112,18 @@ export async function sendChatMessage(
         return 'Atlas is currently unavailable. Please check the API configuration.'
     }
 
-    const intent = detectIntent(query)
-    const context = await getContext(query, intent)
+    // 1. Determine Intent (Smart Search)
+    const intent = await classifyIntent(query)
+
+    let context: string | null = null
+
+    // 2. Fetch context if SEARCH needed
+    if (intent === 'SEARCH') {
+        const smartResult = await getSmartContext(query)
+        if (smartResult) {
+            context = smartResult.context
+        }
+    }
 
     // build messages
     const messages: Array<{ role: string; content: string }> = [
@@ -125,7 +134,9 @@ export async function sendChatMessage(
     if (context) {
         messages.push({
             role: 'system',
-            content: `Use the following AtlasIQ data to inform your response:\n${context}`,
+            content: `Use the following REAL-TIME INTELLIGENCE found on the web to inform your response.
+            Verify the user's question against this data.
+            \n=== WEB CONTEXT ===\n${context}\n===================`,
         })
     }
 
